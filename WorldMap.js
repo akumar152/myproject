@@ -5,12 +5,14 @@ import countries from '../countries-50m.json';
 import 'react-tooltip/dist/react-tooltip.css'
 
 const markers = [
-    { markerOffset: -15, name: "India", coordinates: [78.9629, 20.5937] },
     { markerOffset: -15, name: "Malaysia", coordinates: [101.9758, 4.2105] },
     { markerOffset: -15, name: "Philippines", coordinates: [122.5597, 13.4125] },
     { markerOffset: -15, name: "Indonesia", coordinates: [113.9213, -0.7893] },
-    { markerOffset: -15, name: "Hong Kong", coordinates: [114.1095, 22.3964] }
+    { markerOffset: -15, name: "Hong Kong", coordinates: [114.1095, 22.3964] },
+    { markerOffset: -15, name: "Singapore", coordinates: [103.8198, 1.3521] },
+    { markerOffset: -15, name: "Thailand", coordinates: [100.9925, 15.8700] }
 ];
+
 
 const marketColors = {
     'Priority Market': 'purple',
@@ -20,11 +22,12 @@ const marketColors = {
 
 // Define country market categories
 const countryData = {
-    "India": "Emerging Market",
+    "Thailand": "Emerging Market",
     'Malaysia': 'Priority Market',
     'Indonesia': 'Exploratory Market',
     'Philippines': 'Exploratory Market',
-    'Hong Kong': 'Priority Market'
+    'Hong Kong': 'Priority Market',
+    'Singapore': 'Priority Market'
 };
 
 const MapNew = () => {
