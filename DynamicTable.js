@@ -3,12 +3,12 @@ import React, { useState } from 'react';
 // Sample data and columns
 const columns = [
     { id: 'market', header: 'Market' },
-    { id: 'bronze', header: 'Bronze' },
-    { id: 'bronzeTarget', header: 'Bronze Target' },
-    { id: 'silver', header: 'Silver' },
-    { id: 'silverTarget', header: 'Silver Target' },
-    { id: 'gold', header: 'Gold' },
-    { id: 'goldTarget', header: 'Gold Target' },
+    { id: 'bronze', header: 'Bronze(Raw)' },
+    { id: 'bronzeTarget', header: 'Bronze(Raw THDM)' },
+    { id: 'silver', header: 'Silver (Enriched)' },
+    { id: 'silverTarget', header: 'Silver(Denormalized)' },
+    { id: 'gold', header: 'Gold(Reporting)' },
+    { id: 'goldTarget', header: 'Gold Target(Feature Store)' },
 ];
 
 const colorMap = {
