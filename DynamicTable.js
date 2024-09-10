@@ -3,28 +3,28 @@ import React, { useState } from 'react';
 // Sample data and columns
 const columns = [
     { id: 'market', header: 'Market' },
-    { id: 'bronze', header: 'Bronze(Raw)' },
-    { id: 'bronzeTarget', header: 'Bronze(Raw THDM)' },
+    { id: 'bronze', header: 'Bronze (Raw)' },
+    { id: 'bronzeTarget', header: 'Bronze (Raw THDM)' },
     { id: 'silver', header: 'Silver (Enriched)' },
-    { id: 'silverTarget', header: 'Silver(Denormalized)' },
-    { id: 'gold', header: 'Gold(Reporting)' },
-    { id: 'goldTarget', header: 'Gold Target(Feature Store)' },
+    { id: 'silverTarget', header: 'Silver (Denormalized)' },
+    { id: 'gold', header: 'Gold (Reporting)' },
+    { id: 'goldTarget', header: 'Gold Target (Feature Store)' },
 ];
 
 const colorMap = {
     'Not Started': 'lightgray',
-    'In-progress': 'green',
     'completed': 'blue',
-    'Older Modal': 'black',
-    'Lost Data': 'red'
+    'In-progress': 'green',
+    'Older Modal': 'yellow',
+    'Lost Data': 'black'
 };
 
 const legendColors = {
     'Not Started': 'lightgray',
-    'In-progress': 'green',
     'completed': 'blue',
-    'Older Modal': 'black',
-    'Lost Data': 'red'
+    'In-progress': 'green',
+    'Older Modal': 'yellow',
+    'Lost Data': 'black'
 };
 
 const TableComponent = ({ data }) => {
@@ -52,96 +52,112 @@ const TableComponent = ({ data }) => {
         return 0;
     });
 
+    const tableContainerStyle = {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        overflow: 'hidden',
+    };
+
+    const tableStyle = {
+        width: '100%',
+        borderCollapse: 'collapse',
+        tableLayout: 'fixed',
+    };
+
+    const cellStyle = {
+        border: '1px solid #ddd',
+        padding: '4px',
+        textAlign: 'left',
+        fontSize: '12px',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+    };
+
+    const headerStyle = {
+        backgroundColor: 'pink',
+        cursor: 'pointer',
+        textAlign: 'left',
+        wordWrap: 'break-word', // Allow wrapping
+        wordBreak: 'break-word', // Force break long words if needed
+        whiteSpace: 'normal', // Allow text to wrap
+        fontWeight: 'bold',
+    };
+
+    const searchInputStyle = {
+        width: '100%',
+        padding: '8px',
+        marginBottom: '4px', // Reduced margin
+        border: '1px solid #ddd',
+        borderRadius: '4px',
+        boxSizing: 'border-box',
+    };
+
     return (
-        <div style={{ width: '100%', overflowX: 'auto', marginBottom: '16px' }}>
-            <div style={{ marginBottom: '16px', width: '100%' }}>
-                <input
-                    type="text"
-                    placeholder="Search..."
-                    value={filter}
-                    onChange={(e) => setFilter(e.target.value)}
-                    style={{ width: '100%', boxSizing: 'border-box', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
-                />
-            </div>
-            <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
-                    <thead>
-                        <tr>
-                            {columns.map(column => (
-                                <th
-                                    key={column.id}
+        <div style={tableContainerStyle}>
+            <input
+                type="text"
+                placeholder="Search..."
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                style={searchInputStyle}
+            />
+            <table style={tableStyle}>
+                <thead>
+                    <tr>
+                        {columns.map(column => (
+                            <th
+                                key={column.id}
+                                style={{ ...cellStyle, ...headerStyle }}
+                                onClick={() => handleSort(column.id)}
+                            >
+                                {column.header}
+                                {sortColumn === column.id && (sortDirection === 'asc' ? ' 🔼' : ' 🔽')}
+                            </th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {sortedData.map((row, rowIndex) => (
+                        <tr key={rowIndex}>
+                            {columns.map(col => (
+                                <td
+                                    key={col.id}
                                     style={{
-                                        border: '1px solid #ddd',
-                                        padding: '8px',
-                                        textAlign: 'left',
-                                        backgroundColor: 'pink', // Pink background for headers
-                                        whiteSpace: 'nowrap', // Prevent text wrapping
-                                        overflow: 'hidden', // Prevent overflow
-                                        textOverflow: 'ellipsis', // Ellipsis for overflow text
+                                        ...cellStyle,
+                                        backgroundColor: col.id !== 'market' ? colorMap[row[col.id]] || 'transparent' : (rowIndex % 2 === 0 ? 'pink' : 'lightpink'),
+                                        color: col.id === 'market' ? 'black' : 'transparent',
                                     }}
+                                    title={col.id !== 'market' ? row[col.id] : ''}
                                 >
-                                    <button
-                                        onClick={() => handleSort(column.id)}
-                                        style={{ cursor: 'pointer', background: 'none', border: 'none' }}
-                                    >
-                                        {column.header}
-                                        {sortColumn === column.id && (sortDirection === 'asc' ? ' 🔼' : ' 🔽')}
-                                    </button>
-                                </th>
+                                    {col.id === 'market' ? row[col.id] : ''}
+                                </td>
                             ))}
                         </tr>
-                    </thead>
-                    <tbody>
-                        {sortedData.map((row, rowIndex) => (
-                            <tr key={rowIndex}>
-                                {columns.map(col => (
-                                    <td
-                                        key={col.id}
-                                        style={{
-                                            border: '1px solid #ddd',
-                                            padding: '8px',
-                                            backgroundColor: col.id !== 'market' ? colorMap[row[col.id]] || 'transparent' : (rowIndex % 2 === 0 ? 'pink' : 'lightpink'),
-                                            color: col.id === 'market' ? 'black' : 'transparent', // Show text only in Market column
-                                            whiteSpace: 'nowrap', // Prevent text wrapping
-                                            overflow: 'hidden', // Prevent overflow
-                                            textOverflow: 'ellipsis', // Ellipsis for overflow text
-                                        }}
-                                        title={col.id !== 'market' ? row[col.id] : ''}
-                                    >
-                                        {col.id === 'market' ? row[col.id] : ''}
-                                    </td>
-                                ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            <div style={{ marginTop: '16px', borderTop: '1px solid #ddd', paddingTop: '8px' }}>
+                    ))}
+                </tbody>
+            </table>
+            <div style={{ marginTop: '8px' }}>
                 <div style={{
                     display: 'flex',
                     flexWrap: 'wrap',
-                    justifyContent: 'flex-start',
-                    gap: '16px',
-                    width: '100%',
-                    boxSizing: 'border-box'
+                    gap: '8px',
+                    justifyContent: 'space-between',
                 }}>
                     {Object.entries(legendColors).map(([status, color]) => (
-                        <div key={status} style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            marginBottom: '8px',
-                            flex: '1 1 auto'
-                        }}>
+                        <div key={status} style={{ display: 'flex', alignItems: 'center' }}>
                             <div
                                 style={{
-                                    width: '20px',
-                                    height: '20px',
+                                    width: '12px',
+                                    height: '12px',
                                     backgroundColor: color,
+                                    marginRight: '4px',
                                     border: '1px solid #ddd',
-                                    marginRight: '8px'
                                 }}
                             />
-                            <span>{status}</span>
+                            <span style={{ fontSize: '10px' }}>{status}</span>
                         </div>
                     ))}
                 </div>
