@@ -1,70 +1,75 @@
 import React from 'react';
 import ReactECharts from 'echarts-for-react';
 
-const HeatMapComponent = ({ data }) => {
+const StackedBarChart = ({ data }) => {
+    // Extract unique categories for the x-axis (statuses like "Critical", "Pending", etc.)
+    const xAxisData = [...new Set(data.flatMap(item => item.data.map(d => d.x)))];
+
+    // Generate series data for each country
+    const seriesData = data.map(item => ({
+        name: item.id,
+        type: 'bar',
+        stack: 'total', // Stack bars on top of each other
+        data: xAxisData.map(status => {
+            // Find the corresponding y value for each status
+            const statusData = item.data.find(d => d.x === status);
+            return statusData ? statusData.y : 0;
+        }),
+        label: {
+            show: true,
+            position: 'inside',
+        }
+    }));
+
     const option = {
         tooltip: {
-            position: 'top'
+            trigger: 'axis',
+            axisPointer: { type: 'shadow' },
         },
         grid: {
-            left: 50,
-            right: 10,
-            bottom: 50,
-            top: 50,
+            left: '5%',
+            right: '5%',
+            bottom: '20%', // Adjust bottom to create more space between the chart and the legend
+            top: '10%',
             containLabel: true
+        },
+        legend: {
+            data: data.map(item => item.id),
+            bottom: 10, // Position the legend above the bottom, creating some gap
+            padding: [10, 0, 0, 0] // Add padding on the top to give some space above the legend
         },
         xAxis: {
             type: 'category',
-            data: data[0].data.map(item => item.x),
+            data: xAxisData, // Status categories on the x-axis
             axisLabel: {
-                interval: 0
+                interval: 0,
+                rotate: 0, // Keep the labels horizontal
             }
         },
         yAxis: {
-            type: 'category',
-            data: data.map(item => item.id),
-            axisLabel: {
-                interval: 0,
-                overflow: 'break'
-            }
+            type: 'value'
         },
-        visualMap: {
-            min: 0,
-            max: 100,
-            calculable: true,
-            inRange: {
-                color: ['#fff5f5', '#ffcccc', '#ff9999', '#ff6666', '#ff4d4d', '#ff3333']
-            }
-        },
-        series: [
-            {
-                name: 'Heatmap',
-                type: 'heatmap',
-                data: data.flatMap(item => item.data.map(d => [d.x, item.id, d.y])),
-                label: {
-                    show: true
-                }
-            }
-        ]
+        series: seriesData // Country-specific data for each status
     };
 
     return (
         <div style={{
             width: '100%',
-            maxWidth: '100%', // Ensure it doesn't exceed the container width
-            overflowX: 'auto', // Enable horizontal scrolling when needed
-            boxSizing: 'border-box' // Ensure padding and border are included in width
+            boxSizing: 'border-box',
+            display: 'flex',
+            justifyContent: 'center',
+            overflow: 'hidden' // Prevent overflow issues
         }}>
             <ReactECharts
                 option={option}
                 style={{
-                    height: '300px',
-                    width: '100%', // Ensure the chart takes up full width of its container
-                    minWidth: '600px' // Set a minimum width to ensure scroll when necessary
+                    height: '400px', // Adjust height as needed
+                    width: '100%', // Let the chart take up full width of the container
+                    maxWidth: '100%', // Ensure it doesn't exceed the container
                 }}
             />
         </div>
     );
 };
 
-export default HeatMapComponent;
+export default StackedBarChart;
