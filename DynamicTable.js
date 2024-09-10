@@ -30,18 +30,13 @@ const legendColors = {
 const TableComponent = ({ data }) => {
     const [sortColumn, setSortColumn] = useState(null);
     const [sortDirection, setSortDirection] = useState('asc');
-    const [filter, setFilter] = useState('');
 
     const handleSort = (columnId) => {
         setSortDirection(sortColumn === columnId && sortDirection === 'asc' ? 'desc' : 'asc');
         setSortColumn(columnId);
     };
 
-    const filteredData = data.filter(row => {
-        return Object.values(row).some(value => value.toLowerCase().includes(filter.toLowerCase()));
-    });
-
-    const sortedData = [...filteredData].sort((a, b) => {
+    const sortedData = [...data].sort((a, b) => {
         if (sortColumn) {
             if (sortDirection === 'asc') {
                 return a[sortColumn].localeCompare(b[sortColumn]);
@@ -80,30 +75,14 @@ const TableComponent = ({ data }) => {
         backgroundColor: 'pink',
         cursor: 'pointer',
         textAlign: 'left',
-        wordWrap: 'break-word', // Allow wrapping
-        wordBreak: 'break-word', // Force break long words if needed
-        whiteSpace: 'normal', // Allow text to wrap
+        wordWrap: 'break-word',
+        wordBreak: 'break-word',
+        whiteSpace: 'normal',
         fontWeight: 'bold',
-    };
-
-    const searchInputStyle = {
-        width: '100%',
-        padding: '8px',
-        marginBottom: '4px', // Reduced margin
-        border: '1px solid #ddd',
-        borderRadius: '4px',
-        boxSizing: 'border-box',
     };
 
     return (
         <div style={tableContainerStyle}>
-            <input
-                type="text"
-                placeholder="Search..."
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                style={searchInputStyle}
-            />
             <table style={tableStyle}>
                 <thead>
                     <tr>
