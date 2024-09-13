@@ -43,6 +43,18 @@ const data = [
 const SectionList = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
+  const SectionList = () => {
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  const views = [
+    { name: 'Age', value: '25' },
+    { name: 'Score', value: '89' },
+    { name: 'Height', value: '6ft' },
+    { name: 'Weight', value: '75kg' },
+  ];
+
+  const dropdownOptions = ['Option 1', 'Option 2', 'Option 3', 'Option 4'];
+
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
