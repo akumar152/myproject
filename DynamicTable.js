@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { FaCheckCircle, FaHourglassHalf, FaTimesCircle, FaExclamationTriangle } from 'react-icons/fa';
 
 // Sample data and columns
 const columns = [
@@ -11,20 +12,32 @@ const columns = [
     { id: 'goldTarget', header: 'Gold Target (Feature Store)' },
 ];
 
-const colorMap = {
-    'Not Started': 'lightgray',
-    'completed': 'blue',
-    'In-progress': 'green',
-    'Older Modal': 'yellow',
-    'Lost Data': 'black'
+// Map each status to an icon
+const iconMap = {
+    'Not Started': <FaHourglassHalf style={{ color: 'lightgray' }} />,
+    'completed': <FaCheckCircle style={{ color: 'blue' }} />,
+    'In-progress': <FaCheckCircle style={{ color: 'green' }} />,
+    'Older Modal': <FaExclamationTriangle style={{ color: 'yellow' }} />,
+    'Lost Data': <FaTimesCircle style={{ color: 'black' }} />
 };
 
-const legendColors = {
-    'Not Started': 'lightgray',
-    'completed': 'blue',
-    'In-progress': 'green',
-    'Older Modal': 'yellow',
-    'Lost Data': 'black'
+// Country flag URLs
+const countryFlags = {
+    Malaysia: 'https://flagcdn.com/w320/my.png',
+    Singapore: 'https://flagcdn.com/w320/sg.png',
+    'Hong Kong': 'https://flagcdn.com/w320/hk.png',
+    Indonesia: 'https://flagcdn.com/w320/id.png',
+    Philippines: 'https://flagcdn.com/w320/ph.png',
+    Thailand: 'https://flagcdn.com/w320/th.png',
+};
+
+// For the legend, use the same icons
+const legendIcons = {
+    'Not Started': <FaHourglassHalf style={{ color: 'lightgray' }} />,
+    'completed': <FaCheckCircle style={{ color: 'blue' }} />,
+    'In-progress': <FaCheckCircle style={{ color: 'green' }} />,
+    'Older Modal': <FaExclamationTriangle style={{ color: 'yellow' }} />,
+    'Lost Data': <FaTimesCircle style={{ color: 'black' }} />
 };
 
 const TableComponent = ({ data }) => {
@@ -64,7 +77,7 @@ const TableComponent = ({ data }) => {
 
     const cellStyle = {
         border: '1px solid #ddd',
-        padding: '4px',
+        padding: '12px',
         textAlign: 'left',
         fontSize: '12px',
         overflow: 'hidden',
@@ -74,7 +87,7 @@ const TableComponent = ({ data }) => {
     const headerStyle = {
         backgroundColor: 'pink',
         cursor: 'pointer',
-        textAlign: 'left',
+        textAlign: 'center',
         wordWrap: 'break-word',
         wordBreak: 'break-word',
         whiteSpace: 'normal',
@@ -106,12 +119,24 @@ const TableComponent = ({ data }) => {
                                     key={col.id}
                                     style={{
                                         ...cellStyle,
-                                        backgroundColor: col.id !== 'market' ? colorMap[row[col.id]] || 'transparent' : (rowIndex % 2 === 0 ? 'pink' : 'lightpink'),
-                                        color: col.id === 'market' ? 'black' : 'transparent',
+                                        backgroundColor: col.id === 'market' ? (rowIndex % 2 === 0 ? 'pink' : 'lightpink') : 'transparent',
+                                        textAlign: 'center',
                                     }}
                                     title={col.id !== 'market' ? row[col.id] : ''}
                                 >
-                                    {col.id === 'market' ? row[col.id] : ''}
+                                    {/* Market column with flag and country name */}
+                                    {col.id === 'market' ? (
+                                        <>
+                                            <img
+                                                src={countryFlags[row[col.id]]}
+                                                alt={row[col.id]}
+                                                style={{ width: '16px', height: '16px', marginRight: '8px' }}
+                                            />
+                                            {row[col.id]}
+                                        </>
+                                    ) : (
+                                        iconMap[row[col.id]] // Icon for other columns
+                                    )}
                                 </td>
                             ))}
                         </tr>
@@ -125,18 +150,10 @@ const TableComponent = ({ data }) => {
                     gap: '8px',
                     justifyContent: 'space-between',
                 }}>
-                    {Object.entries(legendColors).map(([status, color]) => (
+                    {Object.entries(legendIcons).map(([status, icon]) => (
                         <div key={status} style={{ display: 'flex', alignItems: 'center' }}>
-                            <div
-                                style={{
-                                    width: '12px',
-                                    height: '12px',
-                                    backgroundColor: color,
-                                    marginRight: '4px',
-                                    border: '1px solid #ddd',
-                                }}
-                            />
-                            <span style={{ fontSize: '10px' }}>{status}</span>
+                            {icon}
+                            <span style={{ fontSize: '10px', marginLeft: '4px' }}>{status}</span>
                         </div>
                     ))}
                 </div>
