@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from "react-simple-maps";
-import { Tooltip } from 'react-tooltip'
-import countries from '../countries-50m.json';
-import 'react-tooltip/dist/react-tooltip.css'
+import { Tooltip } from 'react-tooltip';
+import countries from '../countries-110m.json';
+import 'react-tooltip/dist/react-tooltip.css';
 
 const markers = [
     { markerOffset: -15, name: "Malaysia", coordinates: [101.9758, 4.2105] },
@@ -12,7 +12,6 @@ const markers = [
     { markerOffset: -15, name: "Singapore", coordinates: [103.8198, 1.3521] },
     { markerOffset: -15, name: "Thailand", coordinates: [100.9925, 15.8700] }
 ];
-
 
 const marketColors = {
     'Priority Market': 'purple',
@@ -32,31 +31,31 @@ const countryData = {
 
 const MapNew = () => {
     const [content, setContent] = useState("");
+
     return (
         <div style={{
+            display: 'grid',
             width: '100%',
-            height: '100%',
+            height: '65vh',  // Full height of the viewport
             display: 'flex',
-            flexDirection: 'column',
             justifyContent: 'center',
-            alignItems: 'center'
+            alignItems: 'center',
         }}>
-            {/* <h1>{content}</h1> */}
+            {/* Tooltip to show country info */}
             <Tooltip
                 id="my-tooltip"
                 content={`${content}`}
-            // events={['hover']}
             />
             <div style={{
                 width: '100%',
-                height: '90%',
-                borderStyle: 'double',
+                height: '100%',
+                display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center'
             }}>
-                <ComposableMap>
-                    <ZoomableGroup zoom={1}>
-                        {/* {" "} */}
+                <ComposableMap style={{ width: '100%', height: '100%' }}>
+                    {/* Remove zoom and drag functionality by setting `center`, `zoom`, and disabling `zoomable` */}
+                    <ZoomableGroup zoom={2.7} center={[390, 20]} disablePanning>
                         <Geographies geography={countries}>
                             {({ geographies }) =>
                                 geographies.map((geo) => (
@@ -64,7 +63,7 @@ const MapNew = () => {
                                         key={geo.rsmKey}
                                         geography={geo}
                                         data-tooltip-id="my-tooltip"
-                                        data-tip={geo.properties.name} // Set data-tip here
+                                        data-tip={geo.properties.name}
                                         onMouseEnter={() => setContent(`${geo.properties.name}`)}
                                         onMouseLeave={() => setContent("")}
                                         style={{
@@ -86,15 +85,18 @@ const MapNew = () => {
                             }
                         </Geographies>
                         {markers.map(({ name, coordinates, markerOffset }) => (
-
                             <Marker key={name} coordinates={coordinates}>
-                                <circle r={10} fill={marketColors[countryData[name]]} stroke="#fff" strokeWidth={2} />
+                                <circle r={4} fill={marketColors[countryData[name]]} stroke="#000" strokeWidth={1} />
                                 <text
                                     textAnchor="middle"
                                     y={markerOffset}
                                     style={{
                                         fontFamily: "system-ui",
-                                        fill: "#5D5A6D"
+                                        fill: "black",
+                                        fontSize: '7px',
+                                        marginTop:-10
+
+                                       
                                     }}
                                 >
                                     {name}
