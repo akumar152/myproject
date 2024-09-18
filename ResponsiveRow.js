@@ -47,6 +47,7 @@ const ResponsiveRow = ({ views, dropdownOptions }) => {
                             {isDropdownOpen ? <FaChevronUp /> : <FaChevronDown />} {/* Chevron icon */}
                         </div>
                     </div>
+                    
                     {isDropdownOpen && (
                         <div style={styles.dropdownMenu}>
                             {dropdownOptions.map((option, index) => (
@@ -65,6 +66,44 @@ const ResponsiveRow = ({ views, dropdownOptions }) => {
                             ))}
                         </div>
                     )}
+                    
+                </div>
+            </div>
+            <div style={styles.dropdownContainer}>
+                <div style={styles.customDropdown} onClick={toggleDropdown}>
+                    <div style={styles.selectedOption}>
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            <img
+                                src={countryIcons[selectedOption]}
+                                alt={`${selectedOption} flag`}
+                                style={styles.flagIcon}
+                            /> {/* Display selected country's flag */}
+                            <span style={{ marginLeft: '10px' }}>{selectedOption}</span>
+                        </div>
+                        <div>
+                            {isDropdownOpen ? <FaChevronUp /> : <FaChevronDown />} {/* Chevron icon */}
+                        </div>
+                    </div>
+
+                    {isDropdownOpen && (
+                        <div style={styles.dropdownMenu}>
+                            {dropdownOptions.map((option, index) => (
+                                <div
+                                    key={index}
+                                    style={styles.dropdownItem}
+                                    onClick={() => handleSelect(option)}
+                                >
+                                    <img
+                                        src={countryIcons[option]}
+                                        alt={`${option} flag`}
+                                        style={styles.flagIcon}
+                                    /> {/* Display country flag */}
+                                    {option}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
                 </div>
             </div>
         </div>
@@ -89,7 +128,7 @@ const styles = {
         color: 'black',
         borderRadius: '5px',
         textAlign: 'center',
-        border: 'none',
+        border: '1px solid #ccc',
         boxShadow: '0px 2px 5px rgba(0,0,0,0.2)',
         minWidth: '100px',
     },
