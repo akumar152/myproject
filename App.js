@@ -7,6 +7,12 @@ import ButtonView from './components/TopView';
 import ResponsiveRow from './components/ResponsiveRow';
 import BarLineChart from './components/BarLineChart';
 import HorizontalBarChart from './components/HorizontalBarChart ';
+import Legend from './components/Lgend';
+import DropdownWithSettingsIcon from './components/DropdownWithPlusIcon';
+import AddUserComponent from './components/HorizontalForm ';
+
+
+const optionsMap = ['Option 1', 'Option 2', 'Option 3'];
 
 const data = [
   {
@@ -29,6 +35,40 @@ const data = [
       { country: 'Thailand', active: 10000, inactive: 3000 }
     ]
   }
+];
+
+const options = [
+  {
+    marketColors: {
+      'Priority Market': 'black',
+      'Emerging Market': 'purple',
+      'Exploratory Market': 'yellow'
+    },
+    countryData: {
+      'Malaysia': 'Priority Market',
+      'Indonesia': 'Emerging Market',
+      'Philippines': 'Exploratory Market',
+      'Hong Kong': 'Priority Market',
+      'Singapore': 'Priority Market',
+      'Thailand': 'Emerging Market'
+    }
+  },
+  {
+    marketColors: {
+      'high': 'red',
+      'medium': 'green',
+      'low': 'yellow'
+    },
+    countryData: {
+      'Malaysia': 'high',
+      'Indonesia': 'high',
+      'Philippines': 'low',
+      'Hong Kong': 'medium',
+      'Singapore': 'low',
+      'Thailand': 'high'
+    }
+  },
+  // Add more options for option 3 and option 4...
 ];
 
 const data2 = [
@@ -62,6 +102,9 @@ const categories = ['Category 1', 'Category 2', 'Category 3', 'Category 4', 'Cat
 
 const SectionList = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [currentOption, setCurrentOption] = useState(options[0]);
+
+  const dataColor = { Aelfhfbf: 'red', 'hetlost my boy': 'blue', HelloHi: 'red' };
 
   const views = [
     { name: 'Age', value: '25' },
@@ -157,10 +200,18 @@ const SectionList = () => {
         width: '100%',
         height: '500px', marginTop: 60, marginLeft: 20
       }}>
-        <MapComponent />
+        <MapComponent options={currentOption} />
       </div>
       <div style={{ padding: '20px', gap: '10px', position: 'absolute', top: 0, flex: 1, left: 0, right: 0 }}>
         <ResponsiveRow views={views} dropdownOptions={dropdownOptions} />
+      </div>
+      <div style={{ position: 'absolute', right: 30, top: 150, }}>
+        <Legend data={currentOption.marketColors} />
+        <DropdownWithSettingsIcon 
+          options={options}
+          setCurrentOption={setCurrentOption}
+          currentOption={currentOption}
+        />
       </div>
       {/* <div style={{ position: 'absolute', top: '200px', height: '1200px', width: '800px', padding: '20px', boxSizing: 'border-box', }}>
         <TableComponent data={data2[0].data} />
@@ -190,7 +241,7 @@ const SectionList = () => {
 
           switch (type) {
             case 'map':
-              Component = () => <MapComponent style={mapStyle} />;
+              Component = () => <MapComponent options={currentOption} style={mapStyle} />;
               break;
             case 'table':
               Component = () => <TableComponent data={data} style={tableStyle} />;
@@ -242,14 +293,14 @@ const SectionList = () => {
 
           switch (type) {
             case 'map':
-              Component = () => <MapComponent style={mapStyle} />;
+              Component = () => <MapComponent options={currentOption} style={mapStyle} />;
               break;
             case 'table':
               Component = () => <TableComponent data={data} style={tableStyle} />;
               break;
             case 'chart':
               if (name === 'HeatMap') {
-                Component = () => <HorizontalBarChart data={data} />;
+                Component = () => <HeatMapComponent data={data} />;
               } else if (name === 'barchart') {
                 Component = () => <BarLineChart data={data} />;
               }
@@ -268,7 +319,7 @@ const SectionList = () => {
           );
         })}
       </div>
-      <BarLineChart />
+      <AddUserComponent />
     </div>
   );
 };
