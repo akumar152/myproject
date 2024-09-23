@@ -2,26 +2,33 @@ import React from 'react';
 import ReactECharts from 'echarts-for-react';
 
 const StackedBarChart = ({ data }) => {
-    // Extract unique country names for the x-axis
     const xAxisData = data.map(item => item.id);
-
-    // Extract unique statuses for the legend and series
     const statuses = [...new Set(data.flatMap(item => item.data.map(d => d.x)))];
 
-    // Generate series data for each status
+    // Define colors for each status
+    const statusColors = {
+        'Critical': '#FF0000',  // Red for Critical
+        'Not Started': '#A9A9A9', // Gray for Not Started
+        'Pending': '#FFA500',     // Orange for Pending
+        'In Process': '#008000',  // Green for In Process
+        // Add more colors as needed
+    };
+
     const seriesData = statuses.map(status => ({
         name: status,
         type: 'bar',
-        stack: 'total', // Stack bars on top of each other
+        stack: 'total',
         data: xAxisData.map(country => {
-            // Find the corresponding y value for each status and country
             const countryData = data.find(item => item.id === country);
             const statusData = countryData ? countryData.data.find(d => d.x === status) : null;
             return statusData ? statusData.y : 0;
         }),
         label: {
             show: true,
-            position: 'inside', // Position labels inside the bar
+            position: 'inside',
+        },
+        itemStyle: {
+            color: statusColors[status] || '#999' // Use the color from statusColors, or default to gray
         }
     }));
 
@@ -33,27 +40,27 @@ const StackedBarChart = ({ data }) => {
         grid: {
             left: '5%',
             right: '5%',
-            bottom: '15%', // Adjust bottom to create more space between the chart and the legend
+            bottom: '15%',
             top: '10%',
             containLabel: true,
         },
         legend: {
             data: statuses,
-            bottom: 10, // Position the legend above the bottom, creating some gap
-            padding: [10, 0, 0, 0], // Add padding on the top to give some space above the legend
+            bottom: 10,
+            padding: [10, 0, 0, 0],
         },
         xAxis: {
             type: 'category',
-            data: xAxisData, // Country names on the x-axis
+            data: xAxisData,
             axisLabel: {
                 interval: 0,
-                rotate: 0, // Keep the labels horizontal
+                rotate: 0,
             },
         },
         yAxis: {
             type: 'value',
         },
-        series: seriesData, // Status-specific data for each country
+        series: seriesData,
     };
 
     return (
@@ -62,14 +69,14 @@ const StackedBarChart = ({ data }) => {
             boxSizing: 'border-box',
             display: 'flex',
             justifyContent: 'center',
-            overflow: 'hidden', // Prevent overflow issues
+            overflow: 'hidden',
         }}>
             <ReactECharts
                 option={option}
                 style={{
-                    height: '400px', // Adjust height as needed
-                    width: '100%', // Let the chart take up full width of the container
-                    maxWidth: '100%', // Ensure it doesn't exceed the container
+                    height: '400px',
+                    width: '100%',
+                    maxWidth: '100%',
                 }}
             />
         </div>
