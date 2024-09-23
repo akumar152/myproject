@@ -1,19 +1,15 @@
 import React, { useState } from 'react';
+import { FaCog } from 'react-icons/fa'; // Import the settings icon from react-icons
 
-type DropdownProps = {
-    options: string[];
-};
-
-const DropdownWithPlusIcon: React.FC<DropdownProps> = ({ options }) => {
+const DropdownWithSettingsIcon = ({ options, setCurrentOption, currentOption }) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedOption, setSelectedOption] = useState(options[0]);
 
     const handleToggleDropdown = () => {
         setIsOpen(!isOpen);
     };
 
-    const handleOptionSelect = (option: string) => {
-        setSelectedOption(option);
+    const handleOptionSelect = (option) => {
+        setCurrentOption(option); // Set the selected option in the parent component
         setIsOpen(false);
     };
 
@@ -33,10 +29,11 @@ const DropdownWithPlusIcon: React.FC<DropdownProps> = ({ options }) => {
                     cursor: 'pointer',
                     marginTop: 10,
                     width: 40,
-                    fontSize: '28px'
+                    height: 40, // Adjust height for better alignment
+                    fontSize: '20px' // Adjust font size for icon
                 }}
             >
-                +
+                <FaCog />
             </button>
 
             {isOpen && (
@@ -55,20 +52,20 @@ const DropdownWithPlusIcon: React.FC<DropdownProps> = ({ options }) => {
                         width: '150px', // Set width to control layout
                     }}
                 >
-                    {options.map((option) => (
+                    {options.map((option, index) => (
                         <li
-                            key={option}
+                            key={index}
                             onClick={() => handleOptionSelect(option)}
                             style={{
                                 padding: '8px',
-                                backgroundColor: option === selectedOption ? '#007bff' : '#fff',
-                                color: option === selectedOption ? '#fff' : '#000',
+                                backgroundColor: option === currentOption ? '#007bff' : '#fff',
+                                color: option === currentOption ? '#fff' : '#000',
                                 cursor: 'pointer',
                                 borderRadius: '4px',
                                 whiteSpace: 'nowrap', // Prevents text from wrapping
                             }}
                         >
-                            {option}
+                            {`Option ${index + 1}`} {/* Display option name */}
                         </li>
                     ))}
                 </ul>
@@ -77,4 +74,4 @@ const DropdownWithPlusIcon: React.FC<DropdownProps> = ({ options }) => {
     );
 };
 
-export default DropdownWithPlusIcon;
+export default DropdownWithSettingsIcon;
