@@ -4,48 +4,29 @@ import { Tooltip } from 'react-tooltip';
 import countries from '../countries-110m.json';
 import 'react-tooltip/dist/react-tooltip.css';
 
-const markers = [
-    { markerOffset: -15, name: "Malaysia", coordinates: [101.9758, 4.2105] },
-    { markerOffset: -15, name: "Philippines", coordinates: [122.5597, 13.4125] },
-    { markerOffset: -15, name: "Indonesia", coordinates: [113.9213, -0.7893] },
-    { markerOffset: -15, name: "Hong Kong", coordinates: [114.1095, 22.3964] },
-    { markerOffset: -15, name: "Singapore", coordinates: [103.8198, 1.3521] },
-    { markerOffset: -15, name: "Thailand", coordinates: [100.9925, 15.8700] }
-];
-
-const marketColors = {
-    'Priority Market': 'purple',
-    'Emerging Market': 'red',
-    'Exploratory Market': 'orange'
-};
-
-// Define country market categories
-const countryData = {
-    "Thailand": "Emerging Market",
-    'Malaysia': 'Priority Market',
-    'Indonesia': 'Exploratory Market',
-    'Philippines': 'Exploratory Market',
-    'Hong Kong': 'Priority Market',
-    'Singapore': 'Priority Market'
-};
-
-const MapNew = () => {
+const MapNew = ({ options }) => {
     const [content, setContent] = useState("");
+
+    const markers = [
+        { markerOffset: -15, name: "Malaysia", coordinates: [101.9758, 4.2105] },
+        { markerOffset: -15, name: "Philippines", coordinates: [122.5597, 13.4125] },
+        { markerOffset: -15, name: "Indonesia", coordinates: [113.9213, -0.7893] },
+        { markerOffset: -15, name: "Hong Kong", coordinates: [114.1095, 22.3964] },
+        { markerOffset: -15, name: "Singapore", coordinates: [103.8198, 1.3521] },
+        { markerOffset: -15, name: "Thailand", coordinates: [100.9925, 15.8700] }
+    ];
 
     return (
         <div style={{
             display: 'grid',
             width: '100%',
-            height: '65vh',  // Full height of the viewport
+            height: '65vh',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
         }}>
             {/* Tooltip to show country info */}
-            <Tooltip
-                id="my-tooltip"
-                content={`${content}`}
-            />
+            <Tooltip id="my-tooltip" content={content} />
             <div style={{
                 width: '100%',
                 height: '100%',
@@ -54,7 +35,6 @@ const MapNew = () => {
                 alignItems: 'center'
             }}>
                 <ComposableMap style={{ width: '100%', height: '100%' }}>
-                    {/* Remove zoom and drag functionality by setting `center`, `zoom`, and disabling `zoomable` */}
                     <ZoomableGroup zoom={2.7} center={[390, 20]} disablePanning>
                         <Geographies geography={countries}>
                             {({ geographies }) =>
@@ -86,7 +66,14 @@ const MapNew = () => {
                         </Geographies>
                         {markers.map(({ name, coordinates, markerOffset }) => (
                             <Marker key={name} coordinates={coordinates}>
-                                <circle r={4} fill={marketColors[countryData[name]]} stroke="#000" strokeWidth={1} />
+                                <circle
+                                    r={4}
+                                    fill={options.marketColors[options.countryData[name]]}
+                                    stroke="#000"
+                                    strokeWidth={1}
+                                    onMouseEnter={() => setContent(`${name}: ${options.countryData[name]}`)} // Update tooltip content
+                                    onMouseLeave={() => setContent("")} // Clear tooltip on mouse leave
+                                />
                                 <text
                                     textAnchor="middle"
                                     y={markerOffset}
@@ -94,9 +81,6 @@ const MapNew = () => {
                                         fontFamily: "system-ui",
                                         fill: "black",
                                         fontSize: '7px',
-                                        marginTop:-10
-
-                                       
                                     }}
                                 >
                                     {name}
