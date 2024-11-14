@@ -1,16 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { STATUSES } from '../data';  // Assuming this contains status data
+import React, { useState, useEffect, useRef } from "react";
 
-// Color Icon component to show color squares
 const ColorIcon = ({ color }) => (
   <div
     style={{
-      width: '12px',
-      height: '12px',
+      width: "12px",
+      height: "12px",
       backgroundColor: color,
-      borderRadius: '3px',
-      display: 'inline-block',
-      marginRight: '8px',
+      borderRadius: "3px",
+      display: "inline-block",
+      marginRight: "8px",
     }}
   />
 );
@@ -18,95 +16,107 @@ const ColorIcon = ({ color }) => (
 const StatusCell = ({ getValue, row, column, table }) => {
   const { name, color } = getValue() || {};
   const { updateData } = table.options.meta;
-  
-  const [isOpen, setIsOpen] = useState(false);  // To toggle the dropdown
-  const [selectedStatus, setSelectedStatus] = useState({ name, color });
-  const menuRef = useRef(null);  // To detect clicks outside
 
-  // Close the menu if clicked outside
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState({ name, color });
+  const menuRef = useRef(null); // To detect clicks outside the menu
+
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
         setIsOpen(false);
       }
     };
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    
+    document.addEventListener("mousedown", handleClickOutside);
+
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   const handleStatusChange = (status) => {
     setSelectedStatus(status);
-    updateData(row.index, column.id, status);  // Update the status in the table
-    setIsOpen(false);  // Close the menu after selection
+    updateData(row.index, column.id, status); // Update the status
+    setIsOpen(false); // Close the menu after selection
   };
 
   return (
-    <div style={{ position: 'relative', width: '100%' }} ref={menuRef}>
-      {/* Button that toggles the dropdown */}
+    <div style={{ position: "relative", width: "100%" }} ref={menuRef}>
+      {/* Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         style={{
-          width: '100%',
-          padding: '8px',
-          textAlign: 'left',
-          backgroundColor: selectedStatus.color || 'transparent',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          cursor: 'pointer',
+          width: "100%",
+          padding: "8px",
+          textAlign: "left",
+          backgroundColor: selectedStatus.color || "transparent",
+          border: "1px solid #ccc",
+          borderRadius: "4px",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <ColorIcon color={selectedStatus.color} />
-          {selectedStatus.name}
-        </div>
+        <ColorIcon color={selectedStatus.color} />
+        {selectedStatus.name || "Select Status"}
       </button>
 
-      {/* Dropdown Menu */}
+      {/* Custom Dropdown Menu */}
       {isOpen && (
-        <ul
+        <div
           style={{
-            position: 'absolute',
-            top: '100%',
-            left: '0',
-            margin: '0',
-            padding: '0',
-            listStyleType: 'none',
-            backgroundColor: '#fff',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
-            zIndex: '1000',
-            width: '100%',
+            position: "absolute",
+            top: "100%",
+            left: "0",
+            padding: "10px",
+            backgroundColor: "#fff",
+            border: "1px solid #ccc",
+            borderRadius: "4px",
+            boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+            zIndex: 1000,
+            width: "100%",
+            transition: "opacity 0.3s ease",
+            opacity: isOpen ? 1 : 0, // Fade in/fade out animation
+            maxHeight: "200px",
+            overflowY: "auto",
           }}
         >
-          <li
-            onClick={() => handleStatusChange({ name: 'None', color: 'transparent' })}
-            style={{ padding: '8px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+          {/* Option to reset status */}
+          <div
+            onClick={() => handleStatusChange({ name: "None", color: "transparent" })}
+            style={{
+              padding: "8px",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              borderBottom: "1px solid #ccc",
+              backgroundColor: "transparent",
+            }}
           >
             <ColorIcon color="transparent" />
             None
-          </li>
+          </div>
+
+          {/* List of status options */}
           {STATUSES.map((status) => (
-            <li
+            <div
               key={status.id}
               onClick={() => handleStatusChange(status)}
               style={{
-                padding: '8px 16px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                backgroundColor: status.color === selectedStatus.color ? '#f0f0f0' : 'transparent',
+                padding: "8px",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                backgroundColor: status.color === selectedStatus.color ? "#f0f0f0" : "transparent",
+                borderBottom: "1px solid #ccc",
               }}
             >
               <ColorIcon color={status.color} />
               {status.name}
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );
