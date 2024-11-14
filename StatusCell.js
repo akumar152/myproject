@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { STATUSES } from "../data";
+import React, { useState, useEffect, useRef } from 'react';
+import { STATUSES } from '../data';  // Assuming this contains status data
 
-// A simple ColorIcon component that renders a square with a given color
-export const ColorIcon = ({ color, ...props }) => (
+// Color Icon component to show color squares
+const ColorIcon = ({ color }) => (
   <div
     style={{
       width: '12px',
@@ -11,7 +11,6 @@ export const ColorIcon = ({ color, ...props }) => (
       borderRadius: '3px',
       display: 'inline-block',
       marginRight: '8px',
-      ...props.style,
     }}
   />
 );
@@ -20,37 +19,54 @@ const StatusCell = ({ getValue, row, column, table }) => {
   const { name, color } = getValue() || {};
   const { updateData } = table.options.meta;
   
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // Track if the menu is open
+  const [isOpen, setIsOpen] = useState(false);  // To toggle the dropdown
+  const [selectedStatus, setSelectedStatus] = useState({ name, color });
+  const menuRef = useRef(null);  // To detect clicks outside
+
+  // Close the menu if clicked outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setIsOpen(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleStatusChange = (status) => {
+    setSelectedStatus(status);
+    updateData(row.index, column.id, status);  // Update the status in the table
+    setIsOpen(false);  // Close the menu after selection
+  };
 
   return (
-    <div
-      style={{
-        position: 'relative', 
-        display: 'inline-block',
-        width: '100%',
-        height: '100%',
-      }}
-    >
-      {/* Menu Button */}
+    <div style={{ position: 'relative', width: '100%' }} ref={menuRef}>
+      {/* Button that toggles the dropdown */}
       <button
-        onClick={() => setIsMenuOpen(!isMenuOpen)} // Toggle the menu visibility
+        onClick={() => setIsOpen(!isOpen)}
         style={{
           width: '100%',
-          height: '100%',
           padding: '8px',
           textAlign: 'left',
-          backgroundColor: color || 'transparent',
-          color: 'gray',
+          backgroundColor: selectedStatus.color || 'transparent',
           border: '1px solid #ccc',
           borderRadius: '4px',
           cursor: 'pointer',
         }}
       >
-        {name}
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <ColorIcon color={selectedStatus.color} />
+          {selectedStatus.name}
+        </div>
       </button>
 
-      {/* Menu List */}
-      {isMenuOpen && (
+      {/* Dropdown Menu */}
+      {isOpen && (
         <ul
           style={{
             position: 'absolute',
@@ -59,40 +75,31 @@ const StatusCell = ({ getValue, row, column, table }) => {
             margin: '0',
             padding: '0',
             listStyleType: 'none',
+            backgroundColor: '#fff',
             border: '1px solid #ccc',
-            backgroundColor: 'white',
             borderRadius: '4px',
-            boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.1)',
+            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
             zIndex: '1000',
+            width: '100%',
           }}
         >
           <li
-            onClick={() => {
-              updateData(row.index, column.id, null);
-              setIsMenuOpen(false); // Close the menu after selection
-            }}
-            style={{
-              padding: '8px 16px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-            }}
+            onClick={() => handleStatusChange({ name: 'None', color: 'transparent' })}
+            style={{ padding: '8px 16px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
           >
-            <ColorIcon color="red" />
+            <ColorIcon color="transparent" />
             None
           </li>
           {STATUSES.map((status) => (
             <li
               key={status.id}
-              onClick={() => {
-                updateData(row.index, column.id, status);
-                setIsMenuOpen(false); // Close the menu after selection
-              }}
+              onClick={() => handleStatusChange(status)}
               style={{
                 padding: '8px 16px',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
+                backgroundColor: status.color === selectedStatus.color ? '#f0f0f0' : 'transparent',
               }}
             >
               <ColorIcon color={status.color} />
