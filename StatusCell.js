@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { useTable } from "@tanstack/react-table";
+import React, { useState } from 'react';
+import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
+import DATA from '../data';
 
 // Tooltip Component
 const Tooltip = ({ content, visible }) => {
@@ -43,117 +44,79 @@ const TooltipContent = ({ content, customContent, cellValue }) => {
   );
 };
 
-// Table Component
-const TableComponent = ({ columns, data }) => {
+// Column definitions
+const columns = [
+  {
+    accessorKey: "task",
+    header: "Task",
+    size: 225,
+    cell: (props) => <p>{props.getValue()}</p>,
+  },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: (props) => <p>{props.getValue()?.name}</p>,
+  },
+  {
+    accessorKey: "due",
+    header: "Due",
+    cell: (props) => <p>{props.getValue()?.toLocaleTimeString()}</p>,
+  },
+  {
+    accessorKey: "notes",
+    header: "Notes",
+    cell: (props) => {
+      // You can pass custom content to Tooltip here
+      const { description, taskId } = props.row.original; // Assuming you have `description` and `taskId` in your data
+      return (
+        <TooltipContent
+          content={props.getValue()}
+          customContent={`Task ID: ${taskId}, Description: ${description}`} // Custom value for the tooltip
+          cellValue={props.getValue()}
+        />
+      );
+    },
+  },
+];
+
+function TableComponent(props) {
+  const [data, setData] = useState(DATA);
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
   return (
-    <table style={{ width: "100%", borderCollapse: "collapse" }}>
-      <thead>
-        <tr>
-          {columns.map((column) => (
-            <th
-              key={column.accessorKey}
-              style={{
-                padding: "10px",
-                border: "1px solid #ddd",
-                textAlign: "left",
-                backgroundColor: "#f9f9f9",
-              }}
-            >
-              {column.header}
-            </th>
+    <div className="table" style={{ position: "relative" }}>
+      <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+        <thead>
+          {table.getHeaderGroups().map(headerGroup => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map(header => (
+                <th key={header.id} style={{ width: header.getSize() }}>
+                  {header.column.columnDef.header}
+                </th>
+              ))}
+            </tr>
           ))}
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((row, rowIndex) => (
-          <tr key={rowIndex}>
-            {columns.map((column) => {
-              const cellValue = row[column.accessorKey];
-              return (
-                <td
-                  key={column.accessorKey}
-                  style={{
-                    padding: "8px",
-                    border: "1px solid #ddd",
-                    position: "relative",
-                  }}
-                >
-                  {/* Passing custom content to the Tooltip */}
-                  <TooltipContent
-                    content={cellValue}
-                    customContent={row[column.customContentKey]} // Custom content from row data
-                    cellValue={cellValue}
-                  />
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map(row => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map(cell => (
+                <td key={cell.id} style={{ width: cell.column.getSize(), position: "relative" }}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
-              );
-            })}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-};
-
-// Example usage of the TableComponent
-const App = () => {
-  const columns = [
-    {
-      accessorKey: "task",
-      header: "Task",
-      size: 225,
-      cell: (props) => <TooltipContent content={props.getValue()} cellValue={props.getValue()} />,
-    },
-    {
-      accessorKey: "status",
-      header: "Status",
-      cell: (props) => <TooltipContent content={props.getValue()?.name} cellValue={props.getValue()?.name} />,
-    },
-    {
-      accessorKey: "due",
-      header: "Due",
-      cell: (props) => <TooltipContent content={props.getValue()?.toLocaleTimeString()} cellValue={props.getValue()?.toLocaleTimeString()} />,
-    },
-    {
-      accessorKey: "notes",
-      header: "Notes",
-      cell: (props) => <TooltipContent content={props.getValue()} cellValue={props.getValue()} />,
-    },
-  ];
-
-  // Add custom content to the rows (additional data, like 'description' or 'taskId')
-  const data = [
-    { 
-      task: "Task 1", 
-      status: { name: "In Progress" }, 
-      due: new Date(), 
-      notes: "Note for task 1",
-      taskId: 1, // Custom value to show in tooltip
-      description: "This is a detailed description for Task 1",
-    },
-    { 
-      task: "Task 2", 
-      status: { name: "Completed" }, 
-      due: new Date(), 
-      notes: "Note for task 2",
-      taskId: 2, 
-      description: "This is a detailed description for Task 2",
-    },
-    { 
-      task: "Task 3", 
-      status: { name: "Pending" }, 
-      due: new Date(), 
-      notes: "Note for task 3",
-      taskId: 3, 
-      description: "This is a detailed description for Task 3",
-    },
-  ];
-
-  return (
-    <div>
-      <h1>Interactive Table with Custom Tooltips</h1>
-      <TableComponent columns={columns} data={data} />
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
-};
+}
 
-export default App;
+TableComponent.propTypes = {};
+
+export default TableComponent;
