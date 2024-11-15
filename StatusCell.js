@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
-import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
-import DATA from '../data';
-import { ReactTooltip } from 'react-tooltip'; // Corrected import
-import { FaPen } from 'react-icons/fa'; // Import pencil icon from react-icons
+import React from 'react';
+import { ReactTooltip } from 'react-tooltip';
+import { FaPen } from 'react-icons/fa'; // Pencil icon
 
-// Tooltip Content logic
+// Tooltip content logic with added gap
 const TooltipContent = ({ content, customContent, cellValue }) => {
   const customContentLines = customContent.split(','); // Assuming customContent is a comma-separated string
 
@@ -26,9 +24,11 @@ const TooltipContent = ({ content, customContent, cellValue }) => {
         className="custom-tooltip"
         delayHide={500}
         delayShow={300}
+        arrowColor="#333" // Tooltip arrow color
       >
+        <div style={{ marginBottom: '8px', fontWeight: 'bold' }}>Title: {content}</div>
         {customContentLines.map((line, index) => (
-          <div key={index}>{line}</div> // Render each line in the tooltip
+          <div key={index} style={{ marginTop: '4px' }}>{line}</div> // Add a small gap between lines
         ))}
       </ReactTooltip>
     </div>
@@ -123,18 +123,4 @@ function TableComponent(props) {
           {table.getRowModel().rows.map(row => (
             <tr key={row.id}>
               {row.getVisibleCells().map(cell => (
-                <td key={cell.id} style={{ width: cell.column.getSize(), position: "relative" }}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-TableComponent.propTypes = {};
-
-export default TableComponent;
+                <td key={cell.id} style={{ width: cell.col
