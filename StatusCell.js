@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
 import DATA from '../data';
 import { ReactTooltip } from 'react-tooltip'; // Corrected import
+import { FaPen } from 'react-icons/fa'; // Import pencil icon from react-icons
 
 // Tooltip Content logic
 const TooltipContent = ({ content, customContent, cellValue }) => {
@@ -34,7 +35,7 @@ const TooltipContent = ({ content, customContent, cellValue }) => {
   );
 };
 
-// Edit Icon Component
+// Edit Icon Component (Using react-icons)
 const EditIcon = ({ onClick }) => (
   <button
     onClick={onClick}
@@ -46,7 +47,7 @@ const EditIcon = ({ onClick }) => (
       fontSize: '20px',
     }}
   >
-    ✏️ {/* Pencil icon */}
+    <FaPen /> {/* Pencil icon from react-icons */}
   </button>
 );
 
