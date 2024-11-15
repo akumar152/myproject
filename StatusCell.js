@@ -20,7 +20,13 @@ const Tooltip = ({ content, visible }) => {
         visibility: visible ? "visible" : "hidden",
         transition: "opacity 0.2s ease",
         zIndex: 1000,
-        whiteSpace: "nowrap",
+        maxWidth: "200px", // Optional to limit width of tooltip
+        whiteSpace: "normal", // Allow content to wrap
+        wordBreak: "break-word", // Break long words
+        display: "flex",
+        flexDirection: "column", // Stack content vertically
+        maxHeight: "150px", // Optional, max height of the tooltip
+        overflowY: "auto", // Make tooltip scrollable if content exceeds maxHeight
       }}
     >
       {content}
@@ -32,6 +38,9 @@ const Tooltip = ({ content, visible }) => {
 const TooltipContent = ({ content, customContent, cellValue }) => {
   const [isHovered, setIsHovered] = useState(false);
 
+  // Split customContent into lines if you want each piece of content to be displayed on a new line
+  const customContentLines = customContent.split(','); // Assuming customContent is a comma-separated string
+
   return (
     <div
       onMouseEnter={() => setIsHovered(true)}
@@ -39,7 +48,7 @@ const TooltipContent = ({ content, customContent, cellValue }) => {
       style={{ position: "relative" }}
     >
       <p>{cellValue}</p>
-      <Tooltip content={customContent} visible={isHovered} />
+      <Tooltip content={customContentLines.map((line, index) => <div key={index}>{line}</div>)} visible={isHovered} />
     </div>
   );
 };
