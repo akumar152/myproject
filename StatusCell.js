@@ -35,6 +35,34 @@ const TooltipContent = ({ content, customContent, cellValue }) => {
   );
 };
 
+const StatusCell = ({ row }) => {
+  const { status } = row.original; // Get 'status' from the row
+
+  // Define color mapping for different statuses
+  const statusColors = {
+    'Completed': { color: 'green', text: 'white' },
+    'Not Started': { color: 'blue', text: 'white' },
+    'In Review': { color: 'yellow', text: 'black' },
+    'Submitted': { color: 'orange', text: 'white' },
+  };
+
+  const statusStyle = statusColors[status] || { color: 'gray', text: 'white' }; // Default color if status not found
+
+  return (
+    <span
+      style={{
+        backgroundColor: statusStyle.color,
+        color: statusStyle.text,
+        padding: '5px 10px',
+        borderRadius: '4px',
+        textAlign: 'center',
+        fontWeight: 'bold',
+      }}
+    >
+      {status}
+    </span>
+  );
+};
 // Edit Icon Component (Using react-icons)
 const EditIcon = ({ onClick }) => (
   <button
