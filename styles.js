@@ -5,23 +5,23 @@ export const Container = styled.div`
   display: flex;
   height: 100vh; // Full viewport height
   flex-direction: row; // Horizontal layout by default
-  
+
   @media (max-width: 768px) {
     flex-direction: column; // Stack vertically on smaller screens
-    height: auto;  // Auto height when stacking vertically
+    height: auto; // Auto height when stacking vertically
   }
 `;
 
 // Wrapper for the content section (title + table sections)
 export const ContentWrapper = styled.div`
   display: flex;
-  flex-direction: column;  // Stack components vertically
+  flex-direction: column; // Stack components vertically
   width: 70%; // Content (title + table) takes 70% of the width on larger screens
   padding: 20px;
   overflow-x: auto; // Allow horizontal scrolling for the table if needed
 
   @media (max-width: 768px) {
-    width: 100%;  // Take full width on smaller screens
+    width: 100%; // Take full width on smaller screens
     padding: 10px; // Adjust padding on small screens
   }
 `;
@@ -29,12 +29,12 @@ export const ContentWrapper = styled.div`
 // Individual component styling for horizontal layout (title + table)
 export const Component = styled.div`
   display: flex;
-  flex-direction: row;  // Ensure the title and table are next to each other horizontally
+  flex-direction: row; // Ensure the title and table are next to each other horizontally
   align-items: flex-start; // Align title and table to the top
   margin-bottom: 20px; // Space between components
 
   @media (max-width: 768px) {
-    flex-direction: column;  // Stack vertically on small screens
+    flex-direction: column; // Stack vertically on small screens
     margin-bottom: 15px; // Adjust space for small screens
   }
 `;
@@ -62,7 +62,12 @@ export const TitleBox = styled.div`
 // Table styling with scroll functionality
 export const TableContainer = styled.div`
   width: 100%;
-  overflow-x: auto; // Horizontal scrolling enabled for the table
+  overflow: hidden; // Hide the scrollbar initially
+
+  /* Show the scrollbar when hovering over the table container */
+  &:hover {
+    overflow-x: auto; // Horizontal scrolling enabled on hover
+  }
 
   table {
     width: 100%;
@@ -79,19 +84,23 @@ export const TableContainer = styled.div`
     th, td {
       padding: 12px; // Adjust padding for table cells on small screens
     }
+
+    &:active {
+      overflow-x: auto; // Show scrollbar when the table is tapped on mobile
+    }
   }
 `;
 
 // Form section container aligned to the right side and takes full height
 export const FormContainer = styled.div`
-  width: 30%;  // Form takes up 30% of the screen width on larger screens
+  width: 30%; // Form takes up 30% of the screen width on larger screens
   padding: 20px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;  // Align form section to top
+  justify-content: flex-start; // Align form section to top
   height: 100vh; // Full height of the viewport
   position: sticky;
-  top: 0;  // Ensure it stays fixed as you scroll the content
+  top: 0; // Ensure it stays fixed as you scroll the content
   
   background-color: #f4f4f4; // Light gray background for the form
   border-radius: 10px; // Rounded corners for the form container
@@ -119,24 +128,47 @@ export const FormSectionContainer = styled.div`
 `;
 
 // Form group styling
+// Form group styling
 export const FormGroup = styled.div`
-  margin-bottom: 10px;
+  margin-bottom: 20px; // Increased bottom margin for better spacing
+
+  display: flex;        // Make label and value align in a row
+  flex-wrap: wrap;      // Ensure wrapping if the text is too long
 
   label {
-    display: block;
+    display: inline-block;
     margin-bottom: 5px;
+    font-weight: bold;
+    margin-right: 10px; // Space between label and value
   }
 
-  input, select {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
+  .field-value {
+    display: inline-block;
+    word-wrap: break-word; // Ensures text wraps when too long
+    white-space: normal;   // Allow wrapping if the text overflows
+    line-height: 1.5;      // Line height for readability
+    font-size: 14px;       // Font size for the values
+    max-width: 100%;       // Ensures value uses the full width
+    overflow-wrap: break-word; // Ensure text breaks and wraps when needed
+  }
+
+  input,
+  select {
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  input[type="url"] {
+    width: 100%; // Ensures input fields stretch across the form
   }
 
   @media (max-width: 768px) {
     margin-bottom: 8px; // Adjust space between inputs on small screens
   }
 `;
+
 
 // Button styling
 export const Button = styled.button`
