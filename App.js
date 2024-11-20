@@ -1,77 +1,82 @@
-import React,{useState,useEffect} from 'react';
-import Title from './components/Title';         // Title component
-import Table from './components/HeaderAndTable';         // Table component
-import FormSection from './components/FormSection'; // Form Section component
-import { Container, ContentWrapper, Component, FormContainer } from './components/styles'; // Import styled-components
+import React, { useState } from 'react';
+import * as XLSX from 'xlsx';
+import { Container, ContentWrapper, Component, TitleBox, TableContainer, FormContainer, Button } from './styles';
+
+// Dummy data for the table (can be replaced by API data)
+const dummyData = [
+  { id: 1, name: "John Doe", age: 30, location: "New York", email: "john@example.com", phone: "555-1234", address: "123 Main St", city: "New York", state: "NY", country: "USA" },
+  { id: 2, name: "Jane Smith", age: 25, location: "London", email: "jane@example.com", phone: "555-5678", address: "456 Elm St", city: "London", state: "LDN", country: "UK" },
+  { id: 3, name: "Mark Johnson", age: 40, location: "Los Angeles", email: "mark@example.com", phone: "555-9012", address: "789 Oak St", city: "Los Angeles", state: "CA", country: "USA" },
+  // Add more rows as needed
+];
 
 function App() {
+  const [data, setData] = useState(dummyData);
 
-  const [data, setData] = useState([]);
-  const [columns, setColumns] = useState([]);
+  // Function to export table data to Excel
+  const handleExport = () => {
+    const ws = XLSX.utils.json_to_sheet(data); // Convert data to sheet format
+    const wb = XLSX.utils.book_new(); // Create a new workbook
+    XLSX.utils.book_append_sheet(wb, ws, "Sheet1"); // Append the sheet to the workbook
 
-  useEffect(() => {
-    // Fetch API data here
-    const fetchData = async () => {
-      try {
-        const response = await fetch('https://jsonplaceholder.typicode.com/users'); // Replace with your API URL
-        const result = await response.json();
+    // Export the workbook to Excel file
+    XLSX.writeFile(wb, "table_data.xlsx");
+  };
 
-        // Example: Setting dynamic columns (based on the keys in your API data)
-        const columnNames = Object.keys(result[0] || {}).map(col => col.charAt(0).toUpperCase() + col.slice(1)); // Capitalize headers
-        
-        setColumns(columnNames);  // Set dynamic headers based on the keys of the fetched data
-        setData(result);  // Set the data
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const dummyData = [
-    { id: 1, name: 'John Doe', age: 30, location: 'New York', email: 'johndoe@gmail.com', phone: '123-456-7890', country: 'USA', occupation: 'Developer', company: 'TechCorp', status: 'Active' },
-    { id: 2, name: 'Jane Smith', age: 25, location: 'London', email: 'janesmith@gmail.com', phone: '123-456-7891', country: 'UK', occupation: 'Designer', company: 'CreativeLabs', status: 'Inactive' },
-    { id: 3, name: 'Mike Johnson', age: 35, location: 'Paris', email: 'mikej@gmail.com', phone: '123-456-7892', country: 'France', occupation: 'Manager', company: 'BusinessCo', status: 'Active' },
-    { id: 4, name: 'Emily Davis', age: 40, location: 'Berlin', email: 'emilyd@gmail.com', phone: '123-456-7893', country: 'Germany', occupation: 'Engineer', company: 'TechWorks', status: 'Active' },
-    { id: 5, name: 'Chris Brown', age: 28, location: 'Sydney', email: 'chrisb@gmail.com', phone: '123-456-7894', country: 'Australia', occupation: 'Marketer', company: 'MarketPro', status: 'Inactive' },
-    { id: 6, name: 'Sarah Miller', age: 32, location: 'Toronto', email: 'sarahm@gmail.com', phone: '123-456-7895', country: 'Canada', occupation: 'Consultant', company: 'ConsultCo', status: 'Active' },
-    { id: 7, name: 'David Wilson', age: 45, location: 'Los Angeles', email: 'davidw@gmail.com', phone: '123-456-7896', country: 'USA', occupation: 'Director', company: 'FilmCorp', status: 'Active' },
-    { id: 8, name: 'Sophia Martinez', age: 38, location: 'Madrid', email: 'sophiam@gmail.com', phone: '123-456-7897', country: 'Spain', occupation: 'Photographer', company: 'PhotoCo', status: 'Inactive' },
-    { id: 9, name: 'Daniel Lee', age: 22, location: 'Hong Kong', email: 'daniellee@gmail.com', phone: '123-456-7898', country: 'China', occupation: 'Student', company: 'N/A', status: 'Active' },
-    { id: 10, name: 'Olivia Harris', age: 29, location: 'Tokyo', email: 'oliviah@gmail.com', phone: '123-456-7899', country: 'Japan', occupation: 'Teacher', company: 'SchoolCo', status: 'Active' },
-  ];
-
-  // Column names for the table (10 columns)
-  const column = ['Id', 'Name', 'Age', 'Location', 'Email', 'Phone', 'Country', 'Occupation', 'Company', 'Status'];
   return (
     <Container>
       <ContentWrapper>
-        {/* Component 1 */}
         <Component>
-          <div style={{marginTop:0, alignItems:'flex-start'}}>
-            <Title />
-          </div>
+          <TitleBox>
+            <h2>Table Title</h2>
+          </TitleBox>
+          <TableContainer>
+            {/* Export Button aligned to the right */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+              <Button onClick={handleExport}>Export to Excel</Button>
+            </div>
 
-          <Table data={dummyData} columns={column} />
-        </Component>
-
-        {/* Component 2 */}
-        <Component>
-          <Title />
-          <Table />
-        </Component>
-
-        {/* Component 3 */}
-        <Component>
-          <Title />
-          <Table />
+            {/* Table */}
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Age</th>
+                  <th>Location</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Address</th>
+                  <th>City</th>
+                  <th>State</th>
+                  <th>Country</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.map((row) => (
+                  <tr key={row.id}>
+                    <td>{row.id}</td>
+                    <td>{row.name}</td>
+                    <td>{row.age}</td>
+                    <td>{row.location}</td>
+                    <td>{row.email}</td>
+                    <td>{row.phone}</td>
+                    <td>{row.address}</td>
+                    <td>{row.city}</td>
+                    <td>{row.state}</td>
+                    <td>{row.country}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </TableContainer>
         </Component>
       </ContentWrapper>
 
       {/* Form Section */}
       <FormContainer>
-        <FormSection type="component1" />
+        <h3>Form Section</h3>
+        {/* Add your form elements here */}
       </FormContainer>
     </Container>
   );
