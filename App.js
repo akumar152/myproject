@@ -1,327 +1,80 @@
-import React, { useState, useEffect } from 'react';
-import MapComponent from './components/WorldMap';
-import TableComponent from './components/DynamicTable';
-import HeatMapComponent from './components/HeatMapChart';
-import BarChartComponent from './components/DynamicChart';
-import ButtonView from './components/TopView';
-import ResponsiveRow from './components/ResponsiveRow';
-import BarLineChart from './components/BarLineChart';
-import HorizontalBarChart from './components/HorizontalBarChart ';
-import Legend from './components/Lgend';
-import DropdownWithSettingsIcon from './components/DropdownWithPlusIcon';
-import AddUserComponent from './components/HorizontalForm ';
+import React,{useState,useEffect} from 'react';
+import Title from './components/Title';         // Title component
+import Table from './components/HeaderAndTable';         // Table component
+import FormSection from './components/FormSection'; // Form Section component
+import { Container, ContentWrapper, Component, FormContainer } from './components/styles'; // Import styled-components
 
+function App() {
 
-const optionsMap = ['Option 1', 'Option 2', 'Option 3'];
-
-const data = [
-  {
-    "id": 3, "type": "chart", "name": "HeatMap", "data": [
-      { id: "Malaysia", data: [{ x: "Critical", y: 50 }, { x: "Pending", y: 80 }, { x: "In-Progress", y: 90 }, { x: "Not Started", y: 70 }] },
-      { id: "Indonesia", data: [{ x: "Critical", y: 25 }, { x: "Pending", y: 80 }, { x: "In-Progress", y: 60 }, { x: "Not Started", y: 20 }] },
-      { id: "Hong Kong", data: [{ x: "Critical", y: 30 }, { x: "Pending", y: 10 }, { x: "In-Progress", y: 50 }, { x: "Not Started", y: 45 }] },
-      { id: "Philippines", data: [{ x: "Critical", y: 90 }, { x: "Pending", y: 80 }, { x: "In-Progress", y: 100 }, { x: "Not Started", y: 70 }] },
-      { id: "Singapore", data: [{ x: "Critical", y: 40 }, { x: "Pending", y: 60 }, { x: "In-Progress", y: 75 }, { x: "Not Started", y: 55 }] },
-      { id: "Thailand", data: [{ x: "Critical", y: 35 }, { x: "Pending", y: 45 }, { x: "In-Progress", y: 85 }, { x: "Not Started", y: 65 }] }
-    ]
-  },
-  {
-    "id": 4, "type": "chart", "name": "barchart", "data": [
-      { country: 'Malaysia', active: 13000, inactive: 5000 },
-      { country: 'Indonesia', active: 20000, inactive: 8000 },
-      { country: 'Hong Kong', active: 15000, inactive: 6000 },
-      { country: 'Philippines', active: 9000, inactive: 4000 },
-      { country: 'Singapore', active: 12000, inactive: 4500 },
-      { country: 'Thailand', active: 10000, inactive: 3000 }
-    ]
-  }
-];
-
-const options = [
-  {
-    marketColors: {
-      'Priority Market': 'black',
-      'Emerging Market': 'purple',
-      'Exploratory Market': 'yellow'
-    },
-    countryData: {
-      'Malaysia': 'Priority Market',
-      'Indonesia': 'Emerging Market',
-      'Philippines': 'Exploratory Market',
-      'Hong Kong': 'Priority Market',
-      'Singapore': 'Priority Market',
-      'Thailand': 'Emerging Market'
-    }
-  },
-  {
-    marketColors: {
-      'high': 'red',
-      'medium': 'green',
-      'low': 'yellow'
-    },
-    countryData: {
-      'Malaysia': 'high',
-      'Indonesia': 'high',
-      'Philippines': 'low',
-      'Hong Kong': 'medium',
-      'Singapore': 'low',
-      'Thailand': 'high'
-    }
-  },
-  // Add more options for option 3 and option 4...
-];
-
-const data2 = [
-  {
-    "id": 2, "type": "table", "name": "table", "data": [
-      { market: 'Malaysia', bronze: 'completed', bronzeTarget: 'In-progress', silver: 'Older Modal', silverTarget: 'Older Modal', gold: 'Older Modal', goldTarget: 'Older Modal' },
-      { market: 'Hong Kong', bronze: 'In-progress', bronzeTarget: 'In-progress', silver: 'In-progress', silverTarget: 'In-progress', gold: 'Not Started', goldTarget: 'Not Started' },
-      { market: 'Indonesia', bronze: 'In-progress', bronzeTarget: 'In-progress', silver: 'Not Started', silverTarget: 'Not Started', gold: 'Not Started', goldTarget: 'Not Started' },
-      { market: 'Singapore', bronze: 'Lost Data', bronzeTarget: 'Lost Data', silver: 'Lost Data', silverTarget: 'Lost Data', gold: 'Not Started', goldTarget: 'Not Started' },
-      { market: 'Philippines', bronze: 'Not Started', bronzeTarget: 'Not Started', silver: 'Not Started', silverTarget: 'Not Started', gold: 'Not Started', goldTarget: 'Not Started' },
-      { market: 'Thailand', bronze: 'Not Started', bronzeTarget: 'Not Started', silver: 'Not Started', silverTarget: 'Not Started', gold: 'Not Started', goldTarget: 'Not Started' }
-    ]
-  },]
-
-const sampleData = [
-  {
-    name: '2024',
-    values: [18203, 23489, 29034, 104970, 131744],
-    color: '#5470C6',
-  },
-  {
-    name: '2023',
-    values: [19325, 23438, 31000, 121594, 134141],
-    color: '#91CC75',
-  },
-];
-
-const categories = ['Category 1', 'Category 2', 'Category 3', 'Category 4', 'Category 5'];
-
-
-
-const SectionList = () => {
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [currentOption, setCurrentOption] = useState(options[0]);
-
-  const dataColor = { Aelfhfbf: 'red', 'hetlost my boy': 'blue', HelloHi: 'red' };
-
-  const views = [
-    { name: 'Age', value: '25' },
-    { name: 'Score', value: '89' },
-    { name: 'Height', value: '6ft' },
-    { name: 'Weight', value: '75kg' },
-  ];
-
-  const dropdownOptions = ['Malaysia', 'Singapore', 'HongKong', 'Indonesia', 'Philippines', 'Thailand'];
+  const [data, setData] = useState([]);
+  const [columns, setColumns] = useState([]);
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
+    // Fetch API data here
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://jsonplaceholder.typicode.com/users'); // Replace with your API URL
+        const result = await response.json();
+
+        // Example: Setting dynamic columns (based on the keys in your API data)
+        const columnNames = Object.keys(result[0] || {}).map(col => col.charAt(0).toUpperCase() + col.slice(1)); // Capitalize headers
+        
+        setColumns(columnNames);  // Set dynamic headers based on the keys of the fetched data
+        setData(result);  // Set the data
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    fetchData();
   }, []);
 
-  const containerStyle = {
-    display: 'grid',
-    gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
-    gap: '20px',
-    padding: '20px',
-    boxSizing: 'border-box',
-    marginTop: '110px',
+  const dummyData = [
+    { id: 1, name: 'John Doe', age: 30, location: 'New York', email: 'johndoe@gmail.com', phone: '123-456-7890', country: 'USA', occupation: 'Developer', company: 'TechCorp', status: 'Active' },
+    { id: 2, name: 'Jane Smith', age: 25, location: 'London', email: 'janesmith@gmail.com', phone: '123-456-7891', country: 'UK', occupation: 'Designer', company: 'CreativeLabs', status: 'Inactive' },
+    { id: 3, name: 'Mike Johnson', age: 35, location: 'Paris', email: 'mikej@gmail.com', phone: '123-456-7892', country: 'France', occupation: 'Manager', company: 'BusinessCo', status: 'Active' },
+    { id: 4, name: 'Emily Davis', age: 40, location: 'Berlin', email: 'emilyd@gmail.com', phone: '123-456-7893', country: 'Germany', occupation: 'Engineer', company: 'TechWorks', status: 'Active' },
+    { id: 5, name: 'Chris Brown', age: 28, location: 'Sydney', email: 'chrisb@gmail.com', phone: '123-456-7894', country: 'Australia', occupation: 'Marketer', company: 'MarketPro', status: 'Inactive' },
+    { id: 6, name: 'Sarah Miller', age: 32, location: 'Toronto', email: 'sarahm@gmail.com', phone: '123-456-7895', country: 'Canada', occupation: 'Consultant', company: 'ConsultCo', status: 'Active' },
+    { id: 7, name: 'David Wilson', age: 45, location: 'Los Angeles', email: 'davidw@gmail.com', phone: '123-456-7896', country: 'USA', occupation: 'Director', company: 'FilmCorp', status: 'Active' },
+    { id: 8, name: 'Sophia Martinez', age: 38, location: 'Madrid', email: 'sophiam@gmail.com', phone: '123-456-7897', country: 'Spain', occupation: 'Photographer', company: 'PhotoCo', status: 'Inactive' },
+    { id: 9, name: 'Daniel Lee', age: 22, location: 'Hong Kong', email: 'daniellee@gmail.com', phone: '123-456-7898', country: 'China', occupation: 'Student', company: 'N/A', status: 'Active' },
+    { id: 10, name: 'Olivia Harris', age: 29, location: 'Tokyo', email: 'oliviah@gmail.com', phone: '123-456-7899', country: 'Japan', occupation: 'Teacher', company: 'SchoolCo', status: 'Active' },
+  ];
 
-  };
-
-  const cardStyle = {
-    border: '1px solid #ddd',
-    borderRadius: '8px',
-    padding: '10px',
-    backgroundColor: '#ffffff50',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    maxHeight: '600px', // Restrict maximum height
-    maxWidth: '100%',   // Restrict maximum width
-    overflow: 'hidden',
-    border: '1px solid #ccc',
-    boxShadow: '0px 2px 5px rgba(0,0,0,0.2)',
-
-
-  };
-
-  const titleStyle = {
-    marginBottom: '10px', // Add a 10px gap below the title
-    fontSize: '16px',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  };
-
-  const contentStyle = {
-    // flex: '1',
-    width: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  };
-
-  const mapContainerStyle = {
-    position: 'relative',
-    zIndex: 2, // Ensure map is clickable
-  };
-  const overlayComponentStyle = {
-    padding: '20px',
-    gap: '10px',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1, // Make sure other sections are behind the map
-  };
-  const mapStyle = {
-    width: '100%',
-    height: '10%',
-    maxWidth: '100%',
-    maxHeight: '100px',  // Limit map height to fit in card
-    objectFit: 'contain',
-  };
-
-  const tableStyle = {
-    width: '100%',
-    overflowX: 'auto',
-  };
-
+  // Column names for the table (10 columns)
+  const column = ['Id', 'Name', 'Age', 'Location', 'Email', 'Phone', 'Country', 'Occupation', 'Company', 'Status'];
   return (
-    <div style={{ flex: 1, }}>
-      <div style={{
-        position: 'relative',
-        width: '100%',
-        height: '500px', marginTop: 60, marginLeft: 20
-      }}>
-        <MapComponent options={currentOption} />
-      </div>
-      <div style={{ padding: '20px', gap: '10px', position: 'absolute', top: 0, flex: 1, left: 0, right: 0 }}>
-        <ResponsiveRow views={views} dropdownOptions={dropdownOptions} />
-      </div>
-      <div style={{ position: 'absolute', right: 30, top: 150, }}>
-        <Legend data={currentOption.marketColors} />
-        <DropdownWithSettingsIcon 
-          options={options}
-          setCurrentOption={setCurrentOption}
-          currentOption={currentOption}
-        />
-      </div>
-      {/* <div style={{ position: 'absolute', top: '200px', height: '1200px', width: '800px', padding: '20px', boxSizing: 'border-box', }}>
-        <TableComponent data={data2[0].data} />
+    <Container>
+      <ContentWrapper>
+        {/* Component 1 */}
+        <Component>
+          <div style={{marginTop:0, alignItems:'flex-start'}}>
+            <Title />
+          </div>
 
-      </div> */}
-      <div style={{
-        position: 'absolute',
-        top: 150,
-        left: 0,
-        right: 940,
-        zIndex: 10, // Ensure the section list is on top
-        bottom: 300,
-        padding: '20px',
-        display: 'flex',
-        flexDirection: isMobile ? 'column' : 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        gap: '20px',
-        maxHeight: '800px', // Restrict maximum height
-        maxWidth: '100%',
+          <Table data={dummyData} columns={column} />
+        </Component>
 
-      }}>
+        {/* Component 2 */}
+        <Component>
+          <Title />
+          <Table />
+        </Component>
 
-        {data2.map(item => {
-          const { id, type, name, data } = item;
-          let Component;
+        {/* Component 3 */}
+        <Component>
+          <Title />
+          <Table />
+        </Component>
+      </ContentWrapper>
 
-          switch (type) {
-            case 'map':
-              Component = () => <MapComponent options={currentOption} style={mapStyle} />;
-              break;
-            case 'table':
-              Component = () => <TableComponent data={data} style={tableStyle} />;
-              break;
-            case 'chart':
-              if (name === 'HeatMap') {
-                Component = () => <HorizontalBarChart data={data} />;
-              } else if (name === 'barchart') {
-                Component = () => <BarLineChart data={data} />;
-              }
-              break;
-            default:
-              return null;
-          }
-
-          return (
-            <div key={id} style={{
-              border: '1px solid #ddd',
-              borderRadius: '8px',
-              padding: '10px',
-              backgroundColor: '#fff',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              maxHeight: '600px', // Restrict maximum height
-              maxWidth: '100%',   // Restrict maximum width
-              overflow: 'hidden',
-              backgroundColor: '#ffffff50',
-              border: '1px solid #ccc',
-              boxShadow: '0px 2px 5px rgba(0,0,0,0.2)',
-
-
-            }}>
-              <h2 style={titleStyle}>{name}</h2>
-              <div style={contentStyle}>
-                <Component />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      <div style={containerStyle}>
-
-        {data.map(item => {
-          const { id, type, name, data } = item;
-          let Component;
-
-          switch (type) {
-            case 'map':
-              Component = () => <MapComponent options={currentOption} style={mapStyle} />;
-              break;
-            case 'table':
-              Component = () => <TableComponent data={data} style={tableStyle} />;
-              break;
-            case 'chart':
-              if (name === 'HeatMap') {
-                Component = () => <HeatMapComponent data={data} />;
-              } else if (name === 'barchart') {
-                Component = () => <BarLineChart data={data} />;
-              }
-              break;
-            default:
-              return null;
-          }
-
-          return (
-            <div key={id} style={cardStyle}>
-              <h2 style={titleStyle}>{name}</h2>
-              <div style={contentStyle}>
-                <Component />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      <AddUserComponent />
-    </div>
+      {/* Form Section */}
+      <FormContainer>
+        <FormSection type="component1" />
+      </FormContainer>
+    </Container>
   );
-};
+}
 
-export default SectionList;
+export default App;
