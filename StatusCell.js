@@ -1,154 +1,114 @@
-import React from 'react';
-import { ReactTooltip } from 'react-tooltip';
-import { FaPen } from 'react-icons/fa'; // Pencil icon
 
-// Tooltip content logic with added gap
-const TooltipContent = ({ content, customContent, cellValue }) => {
-  const customContentLines = customContent.split(','); // Assuming customContent is a comma-separated string
+import React from "react";
+import styled from "styled-components";
 
+const MyPage = () => {
   return (
-    <div
-      data-tip
-      data-for="tooltip"
-      style={{ position: "relative" }}
-    >
-      <p>{cellValue}</p>
-      {/* Tooltip will be triggered when hovering over this p element */}
-      <ReactTooltip
-        id="tooltip"
-        place="top"
-        effect="solid"
-        multiline={true}
-        backgroundColor="#333"
-        textColor="#fff"
-        className="custom-tooltip"
-        delayHide={500}
-        delayShow={300}
-        arrowColor="#333" // Tooltip arrow color
-      >
-        <div style={{ marginBottom: '8px', fontWeight: 'bold' }}>Title: {content}</div>
-        {customContentLines.map((line, index) => (
-          <div key={index} style={{ marginTop: '4px' }}>{line}</div> // Add a small gap between lines
-        ))}
-      </ReactTooltip>
-    </div>
-  );
-};
+    <Container>
+      {/* First Section */}
+      <RedBox>Red Box</RedBox>
 
-const StatusCell = ({ row }) => {
-  const { status } = row.original; // Get 'status' from the row
-
-  // Define color mapping for different statuses
-  const statusColors = {
-    'Completed': { color: 'green', text: 'white' },
-    'Not Started': { color: 'blue', text: 'white' },
-    'In Review': { color: 'yellow', text: 'black' },
-    'Submitted': { color: 'orange', text: 'white' },
-  };
-
-  const statusStyle = statusColors[status] || { color: 'gray', text: 'white' }; // Default color if status not found
-
-  return (
-    <span
-      style={{
-        backgroundColor: statusStyle.color,
-        color: statusStyle.text,
-        padding: '5px 10px',
-        borderRadius: '4px',
-        textAlign: 'center',
-        fontWeight: 'bold',
-      }}
-    >
-      {status}
-    </span>
-  );
-};
-// Edit Icon Component (Using react-icons)
-const EditIcon = ({ onClick }) => (
-  <button
-    onClick={onClick}
-    style={{
-      background: 'none',
-      border: 'none',
-      cursor: 'pointer',
-      color: '#007bff',
-      fontSize: '20px',
-    }}
-  >
-    <FaPen /> {/* Pencil icon from react-icons */}
-  </button>
-);
-
-// Column definitions
-const columns = [
-  {
-    accessorKey: "task",
-    header: "Task",
-    size: 225,
-    cell: (props) => <p>{props.getValue()}</p>,
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: (props) => <p>{props.getValue()?.name}</p>,
-  },
-  {
-    accessorKey: "due",
-    header: "Due",
-    cell: (props) => <p>{props.getValue()?.toLocaleTimeString()}</p>,
-  },
-  {
-    accessorKey: "notes",
-    header: "Notes",
-    cell: (props) => {
-      const { description, taskId } = props.row.original; // Assuming you have `description` and `taskId` in your data
-      return (
-        <TooltipContent
-          content={props.getValue()}
-          customContent={`Task ID: ${taskId}, Description: ${description}`} // Custom value for the tooltip
-          cellValue={props.getValue()}
-        />
-      );
-    },
-  },
-  {
-    accessorKey: "edit",
-    header: "Edit",
-    cell: (props) => {
-      const handleEdit = () => {
-        const rowData = props.row.original;
-        // Trigger your edit logic here, for example, open an edit modal
-        alert(`Edit row with task: ${rowData.task}`);
-      };
-      return <EditIcon onClick={handleEdit} />;
-    },
-  },
-];
-
-function TableComponent(props) {
-  const [data, setData] = useState(DATA);
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
-
-  return (
-    <div className="table" style={{ position: "relative" }}>
-      <table style={{ borderCollapse: 'collapse', width: '100%' }}>
-        <thead>
-          {table.getHeaderGroups().map(headerGroup => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
-                <th key={header.id} style={{ width: header.getSize() }}>
-                  {header.column.columnDef.header}
-                </th>
-              ))}
+      {/* Second Section - Table */}
+      <TableContainer>
+        <Table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Age</th>
+              <th>Country</th>
             </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map(row => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map(cell => (
-                <td key={cell.id} style={{ width: cell.col
+          </thead>
+          <tbody>
+            <tr>
+              <td>John</td>
+              <td>25</td>
+              <td>USA</td>
+            </tr>
+            <tr>
+              <td>Jane</td>
+              <td>30</td>
+              <td>Canada</td>
+            </tr>
+            <tr>
+              <td>Sam</td>
+              <td>22</td>
+              <td>UK</td>
+            </tr>
+          </tbody>
+        </Table>
+      </TableContainer>
+
+      {/* Third Section */}
+      <ItemBox>
+        <p>Item 1</p>
+        <p>Item 2</p>
+        <p>Item 3</p>
+      </ItemBox>
+    </Container>
+  );
+};
+
+export default MyPage;
+
+// Styled Components
+const Container = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px;
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
+
+const RedBox = styled.div`
+  width: 100px;
+  height: 100px;
+  background-color: red;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+`;
+
+const TableContainer = styled.div`
+  flex: 1;
+  overflow-x: auto;
+`;
+
+const Table = styled.table`
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f4f4f4;
+  }
+`;
+
+const ItemBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #f4f4f4;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    align-items: center;
+  }
+`;
