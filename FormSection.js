@@ -17,8 +17,8 @@ function FormSection({ type }) {
     // Simulating API response
     const fetchedData = {
       title_name: 'Project X',
-      category_name: 'Research',
-      description: 'This is a description of Project X',
+      category_name: 'Research and Development',
+      description: 'This is a description of Project X. The description is detailed and can be long enough to demonstrate text wrapping behavior in the form section.',
       doc_link: '',
       sharepoint_link: '',
       editable_file_path: ''
@@ -27,7 +27,6 @@ function FormSection({ type }) {
     setFormData(fetchedData);
   }, []);
 
-  // Handle change for the editable input fields
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -42,20 +41,20 @@ function FormSection({ type }) {
       <form>
         {/* Title Name (Text coming from API) */}
         <FormGroup>
-          <label htmlFor="title_name">Title Name:</label>
-          <p id="title_name">{formData.title_name}</p>
+          <label>Title Name:</label>
+          <div className="field-value">{formData.title_name}</div>
         </FormGroup>
 
         {/* Category Name (Text coming from API) */}
         <FormGroup>
-          <label htmlFor="category_name">Category Name:</label>
-          <p id="category_name">{formData.category_name}</p>
+          <label>Category Name:</label>
+          <div className="field-value">{formData.category_name}</div>
         </FormGroup>
 
         {/* Description (Text coming from API) */}
         <FormGroup>
-          <label htmlFor="description">Description:</label>
-          <p id="description">{formData.description}</p>
+          <label>Description:</label>
+          <div className="field-value">{formData.description}</div>
         </FormGroup>
 
         {/* Document Link Input (Editable) */}
@@ -66,7 +65,7 @@ function FormSection({ type }) {
             id="doc_link"
             name="doc_link"
             value={formData.doc_link}
-            onChange={handleInputChange}
+            onChange={(e) => handleInputChange(e)}
             placeholder="Enter Document Link"
           />
         </FormGroup>
@@ -79,7 +78,7 @@ function FormSection({ type }) {
             id="sharepoint_link"
             name="sharepoint_link"
             value={formData.sharepoint_link}
-            onChange={handleInputChange}
+            onChange={(e) => handleInputChange(e)}
             placeholder="Enter SharePoint Link"
           />
         </FormGroup>
@@ -92,7 +91,7 @@ function FormSection({ type }) {
             id="editable_file_path"
             name="editable_file_path"
             value={formData.editable_file_path}
-            onChange={handleInputChange}
+            onChange={(e) => handleInputChange(e)}
             placeholder="Enter Editable File Path"
           />
         </FormGroup>
