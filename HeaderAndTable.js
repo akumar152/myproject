@@ -1,51 +1,103 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useTable } from 'react-table';
 
-const MyComponent = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+const MyTable = () => {
+  const data = React.useMemo(
+    () => [
+      { name: "John Doe", description: "This is a very long description that should be truncated with ellipsis." },
+      { name: "Jane Smith", description: "Another description that goes on and on and should be trimmed." },
+      { name: "Bob Brown", description: "Short description." },
+    ],
+    []
+  );
 
-  // Sample data like "4/4", "0/4", "3/6"
-  useEffect(() => {
-    // Sample API response or static data
-    const apiData = [
-      { id: 1, value: "4/4" },
-      { id: 2, value: "0/4" },
-      { id: 3, value: "3/6" },
-    ];
+  const columns = React.useMemo(
+    () => [
+      {
+        Header: 'Name',
+        accessor: 'name',
+      },
+      {
+        Header: 'Description',
+        accessor: 'description',
+        Cell: ({ value }) => {
+          // Return the cell with custom tooltip logic
+          return (
+            <div
+              style={{
+                maxWidth: '200px',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                textAlign: 'center',  // Center align text
+                cursor: 'pointer',    // Show pointer on hover
+              }}
+              onMouseEnter={(e) => {
+                const tooltip = document.createElement('div');
+                tooltip.id = 'custom-tooltip';
+                tooltip.style.position = 'absolute';
+                tooltip.style.backgroundColor = 'rgba(0, 0, 0, 0.8)'; // Dark background
+                tooltip.style.color = 'white'; // White text
+                tooltip.style.padding = '5px 10px';
+                tooltip.style.borderRadius = '5px';
+                tooltip.style.whiteSpace = 'normal'; // Allow text to wrap
+                tooltip.style.maxWidth = '300px'; // Maximum width of the tooltip
+                tooltip.style.zIndex = '9999';
+                tooltip.innerText = value;
 
-    // Sort by ratio (numerator / denominator)
-    const sortedData = apiData.sort((a, b) => {
-      const [numA, denA] = a.value.split('/').map(Number);  // Parse "4/4" into [4, 4]
-      const [numB, denB] = b.value.split('/').map(Number);  // Parse "0/4" into [0, 4]
-      
-      // Calculate the ratio (numerator / denominator)
-      const ratioA = numA / denA;
-      const ratioB = numB / denB;
+                document.body.appendChild(tooltip);
 
-      // Compare ratios in descending order
-      return ratioB - ratioA;  // For ascending, use `ratioA - ratioB`
-    });
+                // Position the tooltip above the element
+                const rect = e.target.getBoundingClientRect();
+                tooltip.style.top = `${rect.top - tooltip.offsetHeight}px`;
+                tooltip.style.left = `${rect.left + (rect.width - tooltip.offsetWidth) / 2}px`;
+              }}
+              onMouseLeave={() => {
+                const tooltip = document.getElementById('custom-tooltip');
+                if (tooltip) tooltip.remove(); // Remove tooltip on mouse leave
+              }}
+            >
+              {value}
+            </div>
+          );
+        },
+      },
+    ],
+    []
+  );
 
-    setData(sortedData);  // Update state with sorted data
-    setLoading(false);
-  }, []);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
+    columns,
+    data,
+  });
 
   return (
     <div>
-      <h1>Sorted Data by Ratio</h1>
-      <ul>
-        {data.map((item) => (
-          <li key={item.id}>
-            {item.value} (Ratio: {parseFloat(item.value.split('/')[0]) / parseFloat(item.value.split('/')[1])})
-          </li>
-        ))}
-      </ul>
+      <table {...getTableProps()} style={{ width: '100%' }}>
+        <thead>
+          {headerGroups.map(headerGroup => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map(column => (
+                <th {...column.getHeaderProps()}>{column.render('Header')}</th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {rows.map(row => {
+            prepareRow(row);
+            return (
+              <tr {...row.getRowProps()}>
+                {row.cells.map(cell => (
+                  <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                ))}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 };
 
-export default MyComponent;
+export default MyTable;
