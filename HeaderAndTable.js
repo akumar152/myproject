@@ -1,51 +1,41 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React from 'react';
 
-const MyComponent = () => {
-  const [data, setData] = useState([]);
+const data = [
+  { var: "id", count: 20, uniqueCount: 10, datatype: "int" },
+  { var: "name", count: 30, uniqueCount: 10, datatype: "string" }
+];
 
-  // Fetch the data from the API
-  useEffect(() => {
-    axios.get('your-api-endpoint-here')
-      .then(response => {
-        const fetchedData = response.data;
+const DataTable = () => {
+  // Step 1: Extract keys (count, uniqueCount, datatype)
+  const keys = Object.keys(data[0]).filter(key => key !== 'var'); // Skip 'var' key
 
-        // Sort the data by denominator (the value after "/") in descending order
-        const sortedData = fetchedData.sort((a, b) => {
-          const denominatorA = parseInt(a.columnName.split('/')[1], 10); // Get the denominator of a
-          const denominatorB = parseInt(b.columnName.split('/')[1], 10); // Get the denominator of b
-
-          // Compare denominators and return the result in descending order
-          return denominatorB - denominatorA;
-        });
-
-        // Set the sorted data
-        setData(sortedData);
-      })
-      .catch(error => console.error('Error fetching data:', error));
-  }, []);
+  // Step 2: Create a pivoted structure for rendering the table
+  const rows = keys.map(key => {
+    return {
+      key, // the row name (count, uniqueCount, datatype)
+      values: data.map(item => item[key]) // the values for each column
+    };
+  });
 
   return (
     <div>
-      <h1>Sorted Data</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>Var</th>
-            <th>Count</th>
-            <th>Unique Count</th>
-            <th>Datatype</th>
-            <th>Column Name</th> {/* This is the column you want to sort */}
-          </tr>
-        </thead>
+      <h1>Pivot Table</h1>
+      <table border="1" cellPadding="5">
         <tbody>
-          {data.map((item, index) => (
-            <tr key={index}>
-              <td>{item.var}</td>
-              <td>{item.count}</td>
-              <td>{item.uniqueCount}</td>
-              <td>{item.datatype}</td>
-              <td>{item.columnName}</td> {/* Display the value with "4/4", "2/4" etc */}
+          {/* Render the first row with the "var" values as columns */}
+          <tr>
+            {data.map(item => (
+              <td key={item.var}>{item.var}</td> // Column headers (id, name)
+            ))}
+          </tr>
+
+          {/* Render the other rows (count, uniqueCount, datatype) */}
+          {rows.map(row => (
+            <tr key={row.key}>
+              <td>{row.key}</td> {/* Row label (count, uniqueCount, datatype) */}
+              {row.values.map((value, idx) => (
+                <td key={idx}>{value}</td> // Cell values for each column
+              ))}
             </tr>
           ))}
         </tbody>
@@ -54,4 +44,4 @@ const MyComponent = () => {
   );
 };
 
-export default MyComponent;
+export default DataTable;
