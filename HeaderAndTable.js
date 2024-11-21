@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, Form, Button } from "react-bootstrap";
+import { Card, Form, Button, Row, Col } from "react-bootstrap";
 
 function FormSection({ type }) {
   const [formData, setFormData] = useState({
@@ -35,8 +35,8 @@ function FormSection({ type }) {
   };
 
   return (
-    <Card className="shadow-sm my-4" style={{ borderRadius: "10px" }}>
-      <Card.Header as="h4" className="bg-primary text-white">
+    <Card className="shadow-sm my-4" style={{ borderRadius: "10px", width: "100%" }}>
+      <Card.Header as="h4" className="bg-primary text-white text-center">
         {type === "component1"
           ? "Form for Component 1"
           : type === "component2"
@@ -45,61 +45,92 @@ function FormSection({ type }) {
       </Card.Header>
       <Card.Body>
         <Form>
-          {/* Title Name */}
-          <Form.Group className="mb-3">
-            <Form.Label>Title Name:</Form.Label>
-            <p className="form-control-plaintext">{formData.title_name}</p>
-          </Form.Group>
+          <Row>
+            {/* Title Name */}
+            <Col xs={12} className="mb-4">
+              <Form.Group>
+                <Form.Label>Title Name:</Form.Label>
+                <div
+                  className="p-3 border rounded bg-light"
+                  style={{ minHeight: "50px" }}
+                >
+                  {formData.title_name}
+                </div>
+              </Form.Group>
+            </Col>
 
-          {/* Category Name */}
-          <Form.Group className="mb-3">
-            <Form.Label>Category Name:</Form.Label>
-            <p className="form-control-plaintext">{formData.category_name}</p>
-          </Form.Group>
+            {/* Category Name */}
+            <Col xs={12} className="mb-4">
+              <Form.Group>
+                <Form.Label>Category Name:</Form.Label>
+                <div
+                  className="p-3 border rounded bg-light"
+                  style={{ minHeight: "50px" }}
+                >
+                  {formData.category_name}
+                </div>
+              </Form.Group>
+            </Col>
 
-          {/* Description */}
-          <Form.Group className="mb-3">
-            <Form.Label>Description:</Form.Label>
-            <p className="form-control-plaintext">{formData.description}</p>
-          </Form.Group>
+            {/* Description */}
+            <Col xs={12} className="mb-4">
+              <Form.Group>
+                <Form.Label>Description:</Form.Label>
+                <div
+                  className="p-3 border rounded bg-light"
+                  style={{ minHeight: "100px" }}
+                >
+                  {formData.description}
+                </div>
+              </Form.Group>
+            </Col>
+          </Row>
 
-          {/* Document Link */}
-          <Form.Group className="mb-3">
-            <Form.Label>Document Link</Form.Label>
-            <Form.Control
-              type="url"
-              name="doc_link"
-              value={formData.doc_link}
-              onChange={handleInputChange}
-              placeholder="Enter Document Link"
-            />
-          </Form.Group>
+          <Row>
+            {/* Document Link */}
+            <Col xs={12} className="mb-4">
+              <Form.Group>
+                <Form.Label>Document Link</Form.Label>
+                <Form.Control
+                  type="url"
+                  name="doc_link"
+                  value={formData.doc_link}
+                  onChange={handleInputChange}
+                  placeholder="Enter Document Link"
+                />
+              </Form.Group>
+            </Col>
 
-          {/* SharePoint Link */}
-          <Form.Group className="mb-3">
-            <Form.Label>SharePoint Link</Form.Label>
-            <Form.Control
-              type="url"
-              name="sharepoint_link"
-              value={formData.sharepoint_link}
-              onChange={handleInputChange}
-              placeholder="Enter SharePoint Link"
-            />
-          </Form.Group>
+            {/* SharePoint Link */}
+            <Col xs={12} className="mb-4">
+              <Form.Group>
+                <Form.Label>SharePoint Link</Form.Label>
+                <Form.Control
+                  type="url"
+                  name="sharepoint_link"
+                  value={formData.sharepoint_link}
+                  onChange={handleInputChange}
+                  placeholder="Enter SharePoint Link"
+                />
+              </Form.Group>
+            </Col>
 
-          {/* Editable File Path */}
-          <Form.Group className="mb-3">
-            <Form.Label>Editable File Path</Form.Label>
-            <Form.Control
-              type="text"
-              name="editable_file_path"
-              value={formData.editable_file_path}
-              onChange={handleInputChange}
-              placeholder="Enter Editable File Path"
-            />
-          </Form.Group>
+            {/* Editable File Path */}
+            <Col xs={12} className="mb-4">
+              <Form.Group>
+                <Form.Label>Editable File Path</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="editable_file_path"
+                  value={formData.editable_file_path}
+                  onChange={handleInputChange}
+                  placeholder="Enter Editable File Path"
+                />
+              </Form.Group>
+            </Col>
+          </Row>
 
-          <Button variant="primary" type="submit">
+          <Button variant="primary" type="submit" className="w-100">
             Submit
           </Button>
         </Form>
