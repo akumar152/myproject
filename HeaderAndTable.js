@@ -1,153 +1,57 @@
-import React, { useState, useEffect } from "react";
-import { Card, Form, Button, Row, Col, Container } from "react-bootstrap";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
-function FormSection({ type }) {
-  const [formData, setFormData] = useState({
-    title_name: "",
-    category_name: "",
-    description: "",
-    doc_link: "",
-    sharepoint_link: "",
-    editable_file_path: "",
-  });
+const MyComponent = () => {
+  const [data, setData] = useState([]);
 
+  // Fetch the data from the API
   useEffect(() => {
-    const fetchedData = {
-      title_name: "Project X",
-      category_name: "Research and Development",
-      description:
-        "This is a description of Project X. The description is detailed and can be long enough to demonstrate text wrapping behavior in the form section.",
-      doc_link: "",
-      sharepoint_link: "",
-      editable_file_path: "",
-    };
+    axios.get('your-api-endpoint-here')
+      .then(response => {
+        const fetchedData = response.data;
 
-    setFormData(fetchedData);
+        // Sort the data by denominator (the value after "/") in descending order
+        const sortedData = fetchedData.sort((a, b) => {
+          const denominatorA = parseInt(a.columnName.split('/')[1], 10); // Get the denominator of a
+          const denominatorB = parseInt(b.columnName.split('/')[1], 10); // Get the denominator of b
+
+          // Compare denominators and return the result in descending order
+          return denominatorB - denominatorA;
+        });
+
+        // Set the sorted data
+        setData(sortedData);
+      })
+      .catch(error => console.error('Error fetching data:', error));
   }, []);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
   return (
-    <Container fluid className="p-0">
-      <Card className="shadow-sm border-0" style={{ borderRadius: "10px" }}>
-        <Card.Header
-          style={{
-            backgroundColor: "#007bff",
-            color: "white",
-            textAlign: "center",
-            fontSize: "1.25rem", // Reduce header font size
-            fontWeight: "bold",
-            borderTopLeftRadius: "10px",
-            borderTopRightRadius: "10px",
-          }}
-        >
-          {type === "component1"
-            ? "Form for Component 1"
-            : type === "component2"
-            ? "Form for Component 2"
-            : "Form for Component 3"}
-        </Card.Header>
-        <Card.Body>
-          <Form>
-            <Row>
-              {/* Title Name */}
-              <Col xs={12} className="mb-4">
-                <Form.Group>
-                  <Form.Label>Title Name:</Form.Label>
-                  <div
-                    className="p-3 border rounded bg-light"
-                    style={{ minHeight: "50px" }}
-                  >
-                    {formData.title_name}
-                  </div>
-                </Form.Group>
-              </Col>
-
-              {/* Category Name */}
-              <Col xs={12} className="mb-4">
-                <Form.Group>
-                  <Form.Label>Category Name:</Form.Label>
-                  <div
-                    className="p-3 border rounded bg-light"
-                    style={{ minHeight: "50px" }}
-                  >
-                    {formData.category_name}
-                  </div>
-                </Form.Group>
-              </Col>
-
-              {/* Description */}
-              <Col xs={12} className="mb-4">
-                <Form.Group>
-                  <Form.Label>Description:</Form.Label>
-                  <div
-                    className="p-3 border rounded bg-light"
-                    style={{ minHeight: "100px" }}
-                  >
-                    {formData.description}
-                  </div>
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <Row>
-              {/* Document Link */}
-              <Col xs={12} className="mb-4">
-                <Form.Group>
-                  <Form.Label>Document Link</Form.Label>
-                  <Form.Control
-                    type="url"
-                    name="doc_link"
-                    value={formData.doc_link}
-                    onChange={handleInputChange}
-                    placeholder="Enter Document Link"
-                  />
-                </Form.Group>
-              </Col>
-
-              {/* SharePoint Link */}
-              <Col xs={12} className="mb-4">
-                <Form.Group>
-                  <Form.Label>SharePoint Link</Form.Label>
-                  <Form.Control
-                    type="url"
-                    name="sharepoint_link"
-                    value={formData.sharepoint_link}
-                    onChange={handleInputChange}
-                    placeholder="Enter SharePoint Link"
-                  />
-                </Form.Group>
-              </Col>
-
-              {/* Editable File Path */}
-              <Col xs={12} className="mb-4">
-                <Form.Group>
-                  <Form.Label>Editable File Path</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="editable_file_path"
-                    value={formData.editable_file_path}
-                    onChange={handleInputChange}
-                    placeholder="Enter Editable File Path"
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
-
-            <Button variant="primary" type="submit" className="w-100">
-              Submit
-            </Button>
-          </Form>
-        </Card.Body>
-      </Card>
-    </Container>
+    <div>
+      <h1>Sorted Data</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Var</th>
+            <th>Count</th>
+            <th>Unique Count</th>
+            <th>Datatype</th>
+            <th>Column Name</th> {/* This is the column you want to sort */}
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((item, index) => (
+            <tr key={index}>
+              <td>{item.var}</td>
+              <td>{item.count}</td>
+              <td>{item.uniqueCount}</td>
+              <td>{item.datatype}</td>
+              <td>{item.columnName}</td> {/* Display the value with "4/4", "2/4" etc */}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
-}
+};
 
-export default FormSection;
+export default MyComponent;
