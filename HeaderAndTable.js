@@ -2,6 +2,9 @@
   Header: 'Description',
   accessor: 'description',
   Cell: ({ value, row }) => {
+    // Destructure the row data to get the specific values you want
+    const { name, age, country, description } = row.original; // Destructure row.original
+
     // Return the cell with custom tooltip logic
     return (
       <div
@@ -27,20 +30,13 @@
           tooltip.style.zIndex = '9999';
           tooltip.style.textAlign = 'left'; // Align text to the left
 
-          // Define the columns you want to display in the tooltip
-          const columnsToShow = ['name', 'description', 'age', 'country']; // Adjust as needed
-
-          // Populate the tooltip with the specified column_name: value pairs
-          tooltip.innerHTML = columnsToShow
-            .map(
-              (key) => {
-                if (row.values[key]) {
-                  return `<div><strong>${key.charAt(0).toUpperCase() + key.slice(1)}:</strong> ${row.values[key]}</div>`;
-                }
-                return '';
-              }
-            )
-            .join('');
+          // Display the specific columns you want in the tooltip
+          tooltip.innerHTML = `
+            <div><strong>Name:</strong> ${name}</div>
+            <div><strong>Description:</strong> ${description}</div>
+            <div><strong>Age:</strong> ${age}</div>
+            <div><strong>Country:</strong> ${country}</div>
+          `;
 
           // Append the tooltip to the body
           document.body.appendChild(tooltip);
