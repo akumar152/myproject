@@ -27,10 +27,18 @@
           tooltip.style.zIndex = '9999';
           tooltip.style.textAlign = 'left'; // Align text to the left
 
-          // Populate the tooltip with column name: value pairs
-          tooltip.innerHTML = Object.keys(row.values)
+          // Define the columns you want to display in the tooltip
+          const columnsToShow = ['name', 'description', 'age', 'country']; // Adjust as needed
+
+          // Populate the tooltip with the specified column_name: value pairs
+          tooltip.innerHTML = columnsToShow
             .map(
-              (key) => `<div><strong>${key.charAt(0).toUpperCase() + key.slice(1)}:</strong> ${row.values[key]}</div>`
+              (key) => {
+                if (row.values[key]) {
+                  return `<div><strong>${key.charAt(0).toUpperCase() + key.slice(1)}:</strong> ${row.values[key]}</div>`;
+                }
+                return '';
+              }
             )
             .join('');
 
