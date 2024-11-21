@@ -36,7 +36,17 @@ function FormSection({ type }) {
   return (
     <Container fluid className="p-0">
       <Card className="shadow-sm border-0" style={{ borderRadius: "10px" }}>
-        <Card.Header as="h4" className="bg-primary text-white text-center">
+        <Card.Header
+          style={{
+            backgroundColor: "#007bff",
+            color: "white",
+            textAlign: "center",
+            fontSize: "1.25rem", // Reduce header font size
+            fontWeight: "bold",
+            borderTopLeftRadius: "10px",
+            borderTopRightRadius: "10px",
+          }}
+        >
           {type === "component1"
             ? "Form for Component 1"
             : type === "component2"
