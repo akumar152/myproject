@@ -1,59 +1,35 @@
-{
-  Header: 'Description',
-  accessor: 'description',
-  Cell: ({ value, row }) => {
-    // Destructure the row data to get the specific values you want
-    const { name, age, country, description } = row.original; // Destructure row.original
+import styled from 'styled-components';
 
-    // Return the cell with custom tooltip logic
-    return (
-      <div
-        style={{
-          maxWidth: '200px',
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          textAlign: 'center',  // Center align text
-          cursor: 'pointer',    // Show pointer on hover
-        }}
-        onMouseEnter={(e) => {
-          // Create the tooltip div
-          const tooltip = document.createElement('div');
-          tooltip.id = 'custom-tooltip';
-          tooltip.style.position = 'absolute';
-          tooltip.style.backgroundColor = 'rgba(0, 0, 0, 0.8)'; // Dark background
-          tooltip.style.color = 'white'; // White text
-          tooltip.style.padding = '10px 15px';
-          tooltip.style.borderRadius = '5px';
-          tooltip.style.whiteSpace = 'normal'; // Allow text to wrap
-          tooltip.style.maxWidth = '300px'; // Maximum width of the tooltip
-          tooltip.style.zIndex = '9999';
-          tooltip.style.textAlign = 'left'; // Align text to the left
+// Wrapper for the entire content (Title + Table + other tiles)
+export const ContentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  padding: 20px;
+  box-sizing: border-box;
 
-          // Display the specific columns you want in the tooltip
-          tooltip.innerHTML = `
-            <div><strong>Name:</strong> ${name}</div>
-            <div><strong>Description:</strong> ${description}</div>
-            <div><strong>Age:</strong> ${age}</div>
-            <div><strong>Country:</strong> ${country}</div>
-          `;
+  /* Custom Scrollbar Styling */
+  &::-webkit-scrollbar {
+    width: 10px; /* Adjust scrollbar width */
+    background-color: #f0f0f0; /* Light gray background */
+  }
 
-          // Append the tooltip to the body
-          document.body.appendChild(tooltip);
+  &::-webkit-scrollbar-thumb {
+    background-color: #c0c0c0; /* Slightly darker gray for the thumb */
+    border-radius: 5px; /* Rounded corners */
+  }
 
-          // Position the tooltip above the element
-          const rect = e.target.getBoundingClientRect();
-          tooltip.style.top = `${rect.top - tooltip.offsetHeight}px`; // Place it above the element
-          tooltip.style.left = `${rect.left + (rect.width - tooltip.offsetWidth) / 2}px`; // Center it horizontally
-        }}
-        onMouseLeave={() => {
-          // Remove the tooltip when mouse leaves the cell
-          const tooltip = document.getElementById('custom-tooltip');
-          if (tooltip) tooltip.remove();
-        }}
-      >
-        {value}
-      </div>
-    );
-  },
-}
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #a0a0a0; /* Darker gray on hover */
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: #f0f0f0; /* Track background */
+  }
+
+  @media (max-width: 768px) {
+    padding: 10px;
+  }
+`;
