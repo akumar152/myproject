@@ -1,54 +1,54 @@
-import React from 'react';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
+import React from "react";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
 
-const data = [
-  { var: "id", count: 20, uniqueCount: 10, datatype: "int" },
-  { var: "name", count: 30, uniqueCount: 10, datatype: "string" },
-  { var: "score", count: "4/4", uniqueCount: "3/4", datatype: "string" }, // Example with "4/4" format
-];
+const formatDataForDataTable = (data) => {
+  const rowLabels = ["count", "uniqueCount", "datatype", "min", "max"];
 
-const DataTableComponent = () => {
-  // Step 1: Ensure that data is not empty or undefined and extract keys (count, uniqueCount, datatype)
-  const fields = ['count', 'uniqueCount', 'datatype'];  // These are the fixed keys
-  
-  // Step 2: Prepare the columns dynamically based on the 'var' field
-  const columns = data.map(item => ({
-    field: item.var, // Column field will be based on 'var' values
-    header: item.var  // Column header will be based on 'var' values
-  }));
-
-  // Step 3: Prepare rows based on the 'fields' (count, uniqueCount, datatype)
-  const rows = fields.map(field => ({
-    field, 
-    values: data.map(item => item[field] ?? '-') // Fallback to '-' if value is undefined or null
-  }));
-
-  // Step 4: Format the data for DataTable
-  const formattedData = rows.map(row => {
-    const formattedRow = { key: row.field }; // Start with the row key (count, uniqueCount, datatype)
-    row.values.forEach((value, index) => {
-      // Check if value exists and is a string before calling split
-      if (typeof value === 'string' && value.includes('/')) {
-        formattedRow[data[index]?.var] = value.split('/')[0]; // Split value (for example "4/4" -> "4")
-      } else {
-        formattedRow[data[index]?.var] = value; // If no split needed, use value as is
-      }
+  // Create a row for each label and assign the corresponding values
+  const formattedData = rowLabels.map((label) => {
+    const row = { label }; // Each row starts with the label
+    data.forEach((item) => {
+      row[item.var] = item[label]; // Dynamically assign column values
     });
-    return formattedRow;
+    return row;
   });
 
+  return formattedData;
+};
+
+
+// Sample input data
+const data = [
+  { var: "id", count: 200, uniqueCount: 120, datatype: "int", min: 1, max: 999 },
+  { var: "name", count: 300, uniqueCount: 280, datatype: "string", min: "-", max: "-" },
+  { var: "email", count: 150, uniqueCount: 145, datatype: "string", min: "-", max: "-" },
+  { var: "age", count: 100, uniqueCount: 85, datatype: "int", min: 18, max: 75 },
+  { var: "gender", count: 250, uniqueCount: 2, datatype: "string", min: "-", max: "-" },
+  { var: "address", count: 500, uniqueCount: 450, datatype: "string", min: "-", max: "-" },
+  { var: "phone", count: 320, uniqueCount: 300, datatype: "string", min: "-", max: "-" },
+];
+
+// Format data
+const formattedData = formatDataForDataTable(data);
+
+// Extract column headers from the original data
+const columns = data.map((item) => item.var);
+
+const Table = () => {
   return (
-    <div>
-      <h1>Pivot Table using PrimeReact DataTable</h1>
-      <DataTable value={formattedData} responsive>
-        <Column field="key" header="" /> {/* No header for the first column */}
-        {columns.map((col, index) => (
-          <Column key={index} field={col.field} header={col.header} />
+    <div style={{ width: "100%", overflowX: "auto" }}>
+      <DataTable value={formattedData} scrollable scrollDirection="horizontal">
+        {/* First column for row labels */}
+        <Column field="label" header="Label" style={{ fontWeight: "bold" }} />
+
+        {/* Generate columns dynamically from the formatted data */}
+        {columns.map((col) => (
+          <Column key={col} field={col} header={col} style={{ textAlign: "center" }} />
         ))}
       </DataTable>
     </div>
   );
 };
 
-export default DataTableComponent;
+export default Table;
