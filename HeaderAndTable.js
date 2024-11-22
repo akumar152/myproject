@@ -1,11 +1,4 @@
-import React from "react";
-
-
-
-
 const Table = ({ maxWidth = "200%", maxHeight = "300px" }) => {
-  // Extract keys from the first object (excluding 'var')
-
   const data = [
     { var: "id", count: 200, uniqueCount: 120, datatype: "int", min: 1, max: 999 },
     { var: "name", count: 300, uniqueCount: 280, datatype: "string", min: "-", max: "-" },
@@ -17,55 +10,49 @@ const Table = ({ maxWidth = "200%", maxHeight = "300px" }) => {
     { var: "zipcode", count: 90, uniqueCount: 88, datatype: "int", min: 10000, max: 99999 },
     { var: "status", count: 50, uniqueCount: 3, datatype: "enum", min: "Active", max: "Inactive" },
     { var: "dob", count: 100, uniqueCount: 90, datatype: "date", min: "1990-01-01", max: "2023-01-01" },
-    { var: "rating", count: 70, uniqueCount: 50, datatype: "float", min: 1.0, max: 5.0 },
-    { var: "department", count: 200, uniqueCount: 10, datatype: "string", min: "-", max: "-" },
-    { var: "country", count: 220, uniqueCount: 50, datatype: "string", min: "-", max: "-" },
-    { var: "region", count: 80, uniqueCount: 20, datatype: "string", min: "-", max: "-" },
-    { var: "joinDate", count: 150, uniqueCount: 140, datatype: "date", min: "2000-01-01", max: "2023-11-01" },
   ];
-  
-  
+
   if (!data || data.length === 0) return <p>No data available</p>;
 
-  // Extract 'var' column values for table headers
   const columns = data.map((item) => item.var);
-
-  // Extract rows for the separate box
   const rowLabels = ["count", "uniqueCount", "datatype", "min", "max"];
+
+  const getLabelColor = (label) => {
+    switch (label) {
+      case "count":
+        return "#d8eaff"; // Light blue
+      case "uniqueCount":
+        return "#e9ffd8"; // Light green
+      case "datatype":
+        return "#ffecd8"; // Light orange
+      case "min":
+        return "#ffd8d8"; // Light red
+      case "max":
+        return "#e5d8ff"; // Light purple
+      default:
+        return "#f9f9f9"; // Default
+    }
+  };
 
   const cellStyle = {
     border: "1px solid black",
-    padding: "8px", // Match padding with table
+    padding: "8px",
     textAlign: "center",
-    height: "40px", // Uniform height for all cells
-    background: "#f9f9f9",
+    height: "40px",
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        position: "relative",
-      }}
-    >
+    <div style={{ display: "flex", position: "relative" }}>
       {/* Separate box for row labels */}
-      <div
-        style={{
-          marginTop: "38px", // Offset height to match the table header
-        }}
-      >
-        <table
-          style={{
-            borderCollapse: "collapse",
-          }}
-        >
+      <div style={{ marginTop: "38px" }}>
+        <table style={{ borderCollapse: "collapse" }}>
           <tbody>
-            {rowLabels.map((label, index) => (
+            {rowLabels.map((label) => (
               <tr key={label}>
                 <td
                   style={{
                     ...cellStyle,
-                    background: index % 2 === 0 ? "#f9f9f9" : "#fff",
+                    background: getLabelColor(label),
                   }}
                 >
                   {label}
@@ -77,13 +64,7 @@ const Table = ({ maxWidth = "200%", maxHeight = "300px" }) => {
       </div>
 
       {/* Main table */}
-      <div
-        style={{
-          overflow: "auto",
-          maxWidth,
-          maxHeight,
-        }}
-      >
+      <div style={{ overflow: "auto", maxWidth, maxHeight }}>
         <table
           style={{
             borderCollapse: "collapse",
@@ -92,7 +73,6 @@ const Table = ({ maxWidth = "200%", maxHeight = "300px" }) => {
         >
           <thead>
             <tr>
-              {/* Render column headers */}
               {columns.map((col) => (
                 <th
                   key={col}
@@ -109,7 +89,6 @@ const Table = ({ maxWidth = "200%", maxHeight = "300px" }) => {
             </tr>
           </thead>
           <tbody>
-            {/* Render row data */}
             {rowLabels.map((rowKey, index) => (
               <tr key={rowKey}>
                 {data.map((item) => (
@@ -133,8 +112,3 @@ const Table = ({ maxWidth = "200%", maxHeight = "300px" }) => {
 };
 
 export default Table;
-
-// Example usage
-
-
-
