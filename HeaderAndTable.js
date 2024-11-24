@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Card } from 'react-bootstrap'; // Import Card from react-bootstrap
@@ -71,17 +71,31 @@ const Tooltip = styled.div`
   max-width: 300px;
   z-index: 9999;
   display: none;
+  word-wrap: break-word;
 `;
 
 const TableComponent = () => {
-  const [tooltipContent, setTooltipContent] = React.useState("");
+  const [tooltipContent, setTooltipContent] = useState("");
 
   const handleMouseEnter = (e, value) => {
     const tooltip = document.getElementById("custom-tooltip");
     if (tooltip) {
       tooltip.style.display = "block";
-      tooltip.style.top = `${e.target.getBoundingClientRect().top - tooltip.offsetHeight}px`;
-      tooltip.style.left = `${e.target.getBoundingClientRect().left + (e.target.offsetWidth - tooltip.offsetWidth) / 2}px`;
+      // Position the tooltip above the element
+      const rect = e.target.getBoundingClientRect();
+      const tableRect = e.target.closest('table').getBoundingClientRect();
+      
+      // Adjust tooltip position to be within table bounds
+      const topPosition = rect.top - tooltip.offsetHeight - 5;  // 5px gap above the value
+      const leftPosition = rect.left + (rect.width - tooltip.offsetWidth) / 2;
+
+      // Ensure the tooltip stays within table boundaries
+      const maxLeft = tableRect.left + tableRect.width - tooltip.offsetWidth - 20; // 20px gap from the right
+      const minLeft = tableRect.left + 20; // 20px gap from the left
+
+      tooltip.style.top = `${Math.max(topPosition, tableRect.top + 5)}px`;  // Ensure tooltip stays within top bounds
+      tooltip.style.left = `${Math.min(Math.max(leftPosition, minLeft), maxLeft)}px`; // Ensure tooltip stays within left/right bounds
+
       setTooltipContent(value); // Set content for tooltip
     }
   };
