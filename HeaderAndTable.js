@@ -1,114 +1,146 @@
-const Table = ({ maxWidth = "200%", maxHeight = "300px" }) => {
-  const data = [
-    { var: "id", count: 200, uniqueCount: 120, datatype: "int", min: 1, max: 999 },
-    { var: "name", count: 300, uniqueCount: 280, datatype: "string", min: "-", max: "-" },
-    { var: "email", count: 150, uniqueCount: 145, datatype: "string", min: "-", max: "-" },
-    { var: "age", count: 100, uniqueCount: 85, datatype: "int", min: 18, max: 75 },
-    { var: "salary", count: 75, uniqueCount: 70, datatype: "float", min: 30000, max: 120000 },
-    { var: "address", count: 250, uniqueCount: 240, datatype: "string", min: "-", max: "-" },
-    { var: "phone", count: 180, uniqueCount: 175, datatype: "string", min: "0000000000", max: "9999999999" },
-    { var: "zipcode", count: 90, uniqueCount: 88, datatype: "int", min: 10000, max: 99999 },
-    { var: "status", count: 50, uniqueCount: 3, datatype: "enum", min: "Active", max: "Inactive" },
-    { var: "dob", count: 100, uniqueCount: 90, datatype: "date", min: "1990-01-01", max: "2023-01-01" },
-  ];
+import React from 'react';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { Card } from 'react-bootstrap'; // Import Card from react-bootstrap
+import styled from 'styled-components';
 
-  if (!data || data.length === 0) return <p>No data available</p>;
+// Sample data with long text
+const data = [
+  { id: 1, name: "A very long name that needs to be truncated", description: "This is a description with some long text that needs to be truncated." },
+  { id: 2, name: "Short Name", description: "Another description" },
+  { id: 3, name: "Another very long name example", description: "This is a description with a lot of details and information that will be truncated." }
+];
 
-  const columns = data.map((item) => item.var);
-  const rowLabels = ["count", "uniqueCount", "datatype", "min", "max"];
+// Styled components for custom styling
+const StyledCard = styled(Card)`
+  border-radius: 10px;
+  margin-top: 20px;
+`;
 
-  const getLabelColor = (label) => {
-    switch (label) {
-      case "count":
-        return "#d8eaff"; // Light blue
-      case "uniqueCount":
-        return "#e9ffd8"; // Light green
-      case "datatype":
-        return "#ffecd8"; // Light orange
-      case "min":
-        return "#ffd8d8"; // Light red
-      case "max":
-        return "#e5d8ff"; // Light purple
-      default:
-        return "#f9f9f9"; // Default
+const CardHeader = styled(Card.Header)`
+  background-color: #007bff;
+  color: white;
+  padding: 15px;
+  font-size: 1.25rem;
+`;
+
+const TableContainer = styled.div`
+  .p-datatable {
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    margin-top: 20px;
+  }
+
+  .p-datatable-header {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+  }
+
+  .p-datatable-tbody td {
+    padding: 12px 15px;
+    text-align: center;
+    border: 1px solid #ccc;
+    max-width: 200px;  // Limit max width for better truncation
+  }
+
+  .p-column-header,
+  .p-datatable-tbody td {
+    text-align: center;
+  }
+
+  .p-datatable-tbody tr:hover {
+    background-color: #e2e2e2;
+  }
+
+  .p-datatable-tbody tr {
+    transition: background-color 0.3s ease;
+  }
+`;
+
+// Tooltip styling
+const Tooltip = styled.div`
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  white-space: nowrap;
+  max-width: 300px;
+  z-index: 9999;
+  display: none;
+`;
+
+const TableComponent = () => {
+  const [tooltipContent, setTooltipContent] = React.useState("");
+
+  const handleMouseEnter = (e, value) => {
+    const tooltip = document.getElementById("custom-tooltip");
+    if (tooltip) {
+      tooltip.style.display = "block";
+      tooltip.style.top = `${e.target.getBoundingClientRect().top - tooltip.offsetHeight}px`;
+      tooltip.style.left = `${e.target.getBoundingClientRect().left + (e.target.offsetWidth - tooltip.offsetWidth) / 2}px`;
+      setTooltipContent(value); // Set content for tooltip
     }
   };
 
-  const cellStyle = {
-    border: "1px solid black",
-    padding: "8px",
-    textAlign: "center",
-    height: "40px",
+  const handleMouseLeave = () => {
+    const tooltip = document.getElementById("custom-tooltip");
+    if (tooltip) {
+      tooltip.style.display = "none";
+    }
   };
 
-  return (
-    <div style={{ display: "flex", position: "relative" }}>
-      {/* Separate box for row labels */}
-      <div style={{ marginTop: "38px" }}>
-        <table style={{ borderCollapse: "collapse" }}>
-          <tbody>
-            {rowLabels.map((label) => (
-              <tr key={label}>
-                <td
-                  style={{
-                    ...cellStyle,
-                    background: getLabelColor(label),
-                  }}
-                >
-                  {label}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+  const columns = [
+    { field: "name", header: "Name" },
+    { field: "description", header: "Description" }
+  ];
 
-      {/* Main table */}
-      <div style={{ overflow: "auto", maxWidth, maxHeight }}>
-        <table
-          style={{
-            borderCollapse: "collapse",
-            width: "100%",
-          }}
-        >
-          <thead>
-            <tr>
-              {columns.map((col) => (
-                <th
-                  key={col}
-                  style={{
-                    border: "1px solid black",
-                    padding: "8px",
-                    textAlign: "center",
-                    background: "#f0f0f0",
-                  }}
-                >
-                  {col}
-                </th>
+  return (
+    <div>
+      {/* Card with a title and custom background color */}
+      <StyledCard>
+        <CardHeader>
+          <h4>DataTable with Tooltip on Hover</h4>
+        </CardHeader>
+        <Card.Body>
+          {/* DataTable with custom styling */}
+          <TableContainer>
+            <DataTable value={data} responsive>
+              {columns.map((col, index) => (
+                <Column
+                  key={index}
+                  field={col.field}
+                  header={col.header}
+                  body={(rowData) => (
+                    <div
+                      style={{
+                        maxWidth: '200px',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        textAlign: 'center', // Center align text
+                        cursor: 'pointer',   // Show pointer on hover
+                      }}
+                      onMouseEnter={(e) => handleMouseEnter(e, rowData[col.field])}
+                      onMouseLeave={handleMouseLeave}
+                    >
+                      {rowData[col.field]}
+                    </div>
+                  )}
+                />
               ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rowLabels.map((rowKey, index) => (
-              <tr key={rowKey}>
-                {data.map((item) => (
-                  <td
-                    key={`${rowKey}-${item.var}`}
-                    style={{
-                      ...cellStyle,
-                      background: index % 2 === 0 ? "#f9f9f9" : "#fff",
-                    }}
-                  >
-                    {item[rowKey]}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </DataTable>
+          </TableContainer>
+        </Card.Body>
+      </StyledCard>
+
+      {/* Tooltip element */}
+      <Tooltip id="custom-tooltip">{tooltipContent}</Tooltip>
     </div>
   );
 };
 
-export default Table;
+export default TableComponent;
