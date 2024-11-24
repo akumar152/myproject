@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Card } from 'react-bootstrap'; // Import Card from react-bootstrap
-import styled from 'styled-components';
 
 // Sample data with long text
 const data = [
@@ -11,117 +10,51 @@ const data = [
   { id: 3, name: "Another very long name example", description: "This is a description with a lot of details and information that will be truncated." }
 ];
 
-// Styled components for custom styling
-const StyledCard = styled(Card)`
-  border-radius: 10px;
-  margin-top: 20px;
-`;
-
-const CardHeader = styled(Card.Header)`
-  background-color: #007bff;
-  color: white;
-  padding: 15px;
-  font-size: 1.25rem;
-`;
-
-const TableContainer = styled.div`
-  .p-datatable {
-    width: 100%;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
-    margin-top: 20px;
-  }
-
-  .p-datatable-header {
-    background-color: #007bff;
-    color: white;
-    font-weight: bold;
-  }
-
-  .p-datatable-tbody td {
-    padding: 12px 15px;
-    text-align: center;
-    border: 1px solid #ccc;
-    max-width: 200px;  // Limit max width for better truncation
-  }
-
-  .p-column-header,
-  .p-datatable-tbody td {
-    text-align: center;
-  }
-
-  .p-datatable-tbody tr:hover {
-    background-color: #e2e2e2;
-  }
-
-  .p-datatable-tbody tr {
-    transition: background-color 0.3s ease;
-  }
-`;
-
-// Tooltip styling
-const Tooltip = styled.div`
-  position: absolute;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 5px 10px;
-  border-radius: 5px;
-  white-space: nowrap;
-  max-width: 300px;
-  z-index: 9999;
-  display: none;
-  word-wrap: break-word;
-`;
-
 const TableComponent = () => {
-  const [tooltipContent, setTooltipContent] = useState("");
-
-  const handleMouseEnter = (e, value) => {
-    const tooltip = document.getElementById("custom-tooltip");
-    if (tooltip) {
-      tooltip.style.display = "block";
-      // Position the tooltip above the element
-      const rect = e.target.getBoundingClientRect();
-      const tableRect = e.target.closest('table').getBoundingClientRect();
-      
-      // Adjust tooltip position to be within table bounds
-      const topPosition = rect.top - tooltip.offsetHeight - 5;  // 5px gap above the value
-      const leftPosition = rect.left + (rect.width - tooltip.offsetWidth) / 2;
-
-      // Ensure the tooltip stays within table boundaries
-      const maxLeft = tableRect.left + tableRect.width - tooltip.offsetWidth - 20; // 20px gap from the right
-      const minLeft = tableRect.left + 20; // 20px gap from the left
-
-      tooltip.style.top = `${Math.max(topPosition, tableRect.top + 5)}px`;  // Ensure tooltip stays within top bounds
-      tooltip.style.left = `${Math.min(Math.max(leftPosition, minLeft), maxLeft)}px`; // Ensure tooltip stays within left/right bounds
-
-      setTooltipContent(value); // Set content for tooltip
-    }
-  };
-
-  const handleMouseLeave = () => {
-    const tooltip = document.getElementById("custom-tooltip");
-    if (tooltip) {
-      tooltip.style.display = "none";
-    }
-  };
-
+  const [tooltip, setTooltip] = useState(null); // To manage tooltip visibility and content
   const columns = [
     { field: "name", header: "Name" },
     { field: "description", header: "Description" }
   ];
 
+  // Function to handle tooltip visibility on hover
+  const handleMouseEnter = (e, value) => {
+    const tooltip = document.createElement('div');
+    tooltip.id = 'custom-tooltip';
+    tooltip.style.position = 'absolute';
+    tooltip.style.backgroundColor = 'rgba(0, 0, 0, 0.8)'; // Dark background
+    tooltip.style.color = 'white'; // White text
+    tooltip.style.padding = '5px 10px';
+    tooltip.style.borderRadius = '5px';
+    tooltip.style.whiteSpace = 'normal'; // Allow text to wrap
+    tooltip.style.maxWidth = '300px'; // Maximum width of the tooltip
+    tooltip.style.zIndex = '9999';
+    tooltip.innerText = value;
+
+    document.body.appendChild(tooltip);
+
+    // Position the tooltip above the element
+    const rect = e.target.getBoundingClientRect();
+    tooltip.style.top = `${rect.top - tooltip.offsetHeight}px`;
+    tooltip.style.left = `${rect.left + (rect.width - tooltip.offsetWidth) / 2}px`;
+  };
+
+  // Function to remove tooltip on mouse leave
+  const handleMouseLeave = () => {
+    const tooltip = document.getElementById('custom-tooltip');
+    if (tooltip) tooltip.remove(); // Remove tooltip on mouse leave
+  };
+
   return (
     <div>
       {/* Card with a title and custom background color */}
-      <StyledCard>
-        <CardHeader>
-          <h4>DataTable with Tooltip on Hover</h4>
-        </CardHeader>
+      <Card style={{ height: '250px', width: '800px', borderRadius: '10px', marginTop: '20px' }}>
+        <Card.Header style={{ backgroundColor: '#007bff', color: 'white', padding: '15px', fontSize: '1.25rem' }}>
+          <h4>DataTable with Custom Tooltip on Hover</h4>
+        </Card.Header>
         <Card.Body>
           {/* DataTable with custom styling */}
-          <TableContainer>
+          <div style={{ marginTop: '20px', overflow: 'auto', height: 'calc(100% - 60px)' }}>
             <DataTable value={data} responsive>
               {columns.map((col, index) => (
                 <Column
@@ -135,24 +68,33 @@ const TableComponent = () => {
                         whiteSpace: 'nowrap',
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
-                        textAlign: 'center', // Center align text
-                        cursor: 'pointer',   // Show pointer on hover
+                        textAlign: 'center',  // Center align text
+                        cursor: 'pointer',    // Show pointer on hover
                       }}
-                      onMouseEnter={(e) => handleMouseEnter(e, rowData[col.field])}
-                      onMouseLeave={handleMouseLeave}
+                      onMouseEnter={(e) => handleMouseEnter(e, rowData[col.field])}  // Show tooltip
+                      onMouseLeave={handleMouseLeave}  // Hide tooltip
                     >
                       {rowData[col.field]}
                     </div>
                   )}
+                  headerStyle={{
+                    backgroundColor: '#f4f4f4',
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    padding: '10px'
+                  }}
+                  bodyStyle={{
+                    textAlign: 'center',
+                    padding: '10px',
+                    fontSize: '14px',
+                    borderBottom: '1px solid #ddd'
+                  }}
                 />
               ))}
             </DataTable>
-          </TableContainer>
+          </div>
         </Card.Body>
-      </StyledCard>
-
-      {/* Tooltip element */}
-      <Tooltip id="custom-tooltip">{tooltipContent}</Tooltip>
+      </Card>
     </div>
   );
 };
