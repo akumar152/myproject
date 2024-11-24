@@ -1,153 +1,162 @@
-import React, { useState, useEffect } from 'react';
-import { Form, Container } from 'react-bootstrap';
-import { FormSectionContainer, FormGroup } from './styles';
+export const WORKBENCH_TYPES = {
+    FETCH_REQUEST: "FETCH_REQUEST",
+    FETCH_SUCCESS: "FETCH_SUCCESS",
+    FETCH_FAILURE: "FETCH_FAILURE",
+    UPDATE_DROPDOWN_SELECTION: "UPDATE_DROPDOWN_SELECTION",
+  };
 
-function FormSection({ type }) {
-  const [formData, setFormData] = useState({
-    title_name: '',
-    category_name: '',
-    description: '',
-    doc_link: '',
-    sharepoint_link: '',
-    editable_file_path: '',
-  });
+  
+//   ##Actions
 
-  const [categories, setCategories] = useState([
-    'Research and Development',
-    'Marketing',
-    'Human Resources',
-    'Finance',
-    'Engineering',
-  ]); // Example dropdown options
+import { WORKBENCH_TYPES } from "./workbench.types";
 
-  const [filteredCategories, setFilteredCategories] = useState(categories); // To handle search
+// Fetch request action
+export const fetchRequest = (card) => ({
+  type: WORKBENCH_TYPES.FETCH_REQUEST,
+  payload: { card },
+});
 
-  useEffect(() => {
-    const fetchedData = {
-      title_name: 'Project X',
-      category_name: 'Research and Development',
-      description:
-        'This is a description of Project X. The description is detailed and can be long enough to demonstrate text wrapping behavior in the form section.',
-      doc_link: '',
-      sharepoint_link: '',
-      editable_file_path: '',
-    };
-    setFormData(fetchedData);
-  }, []);
+// Fetch success action
+export const fetchSuccess = (card, data) => ({
+  type: WORKBENCH_TYPES.FETCH_SUCCESS,
+  payload: { card, data },
+});
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
+// Fetch failure action
+export const fetchFailure = (card, error) => ({
+  type: WORKBENCH_TYPES.FETCH_FAILURE,
+  payload: { card, error },
+});
+
+// Update dropdown selection
+export const updateDropdownSelection = (name, value) => ({
+  type: WORKBENCH_TYPES.UPDATE_DROPDOWN_SELECTION,
+  payload: { name, value },
+});
+
+// Fetch data for a card
+export const fetchCardData = (card, endpoint, params = {}) => async (dispatch) => {
+  dispatch(fetchRequest(card));
+  try {
+    const queryParams = new URLSearchParams(params).toString();
+    const url = queryParams ? `${endpoint}?${queryParams}` : endpoint;
+    const response = await fetch(url);
+
+    if (!response.ok) throw new Error(`Failed to fetch ${card} data`);
+
+    const data = await response.json();
+    dispatch(fetchSuccess(card, data));
+  } catch (error) {
+    dispatch(fetchFailure(card, error.message));
+  }
+};
+
+// Fetch dropdown data based on dependencies
+export const fetchDropdownData = (name, params) => async (dispatch) => {
+  dispatch(fetchRequest("card4"));
+  try {
+    const response = await fetch(`/api/card4/${name}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(params),
     });
-  };
+    if (!response.ok) throw new Error("Failed to fetch dropdown data");
 
-  const handleCategorySearch = (e) => {
-    const searchValue = e.target.value.toLowerCase();
-    const filtered = categories.filter((category) =>
-      category.toLowerCase().includes(searchValue)
-    );
-    setFilteredCategories(filtered);
-  };
+    const data = await response.json();
+    dispatch(fetchSuccess("card4", { [name]: { options: data } }));
+  } catch (error) {
+    dispatch(fetchFailure("card4", error.message));
+  }
+};
 
-  const handleCategorySelect = (e) => {
-    setFormData({
-      ...formData,
-      category_name: e.target.value,
-    });
-  };
 
-  return (
-    <Container className="p-4">
-      <FormSectionContainer>
-        <h3>
-          {type === 'component1'
-            ? 'Form for Component 1'
-            : type === 'component2'
-            ? 'Form for Component 2'
-            : 'Form for Component 3'}
-        </h3>
-        <form>
-          {/* Title Name (Text coming from API) */}
-          <FormGroup>
-            <label>Title Name:</label>
-            <div className="field-value">{formData.title_name}</div>
-          </FormGroup>
+// reducer
 
-          {/* Category Name (Searchable Dropdown) */}
-          <FormGroup>
-            <label>Category Name:</label>
-            <Form.Control
-              type="text"
-              placeholder="Search categories..."
-              onChange={handleCategorySearch}
-              className="mb-2"
-            />
-            <Form.Control
-              as="select"
-              value={formData.category_name}
-              onChange={handleCategorySelect}
-            >
-              <option value="" disabled>
-                Select a category
-              </option>
-              {filteredCategories.map((category, index) => (
-                <option key={index} value={category}>
-                  {category}
-                </option>
-              ))}
-            </Form.Control>
-          </FormGroup>
+import { WORKBENCH_TYPES } from "./workbench.types";
 
-          {/* Description (Text coming from API) */}
-          <FormGroup>
-            <label>Description:</label>
-            <div className="field-value">{formData.description}</div>
-          </FormGroup>
+const initialState = {
+  card1: { data: null, loading: false, error: null },
+  card2: { data: null, loading: false, error: null },
+  card3: { data: null, loading: false, error: null },
+  card4: {
+    data: null,
+    loading: false,
+    error: null,
+    dropdowns: {
+      datasets: { options: [], selected: null },
+      containers: { options: [], selected: null },
+      fileTypes: { options: [], selected: null },
+      filePaths: { options: [], selected: null },
+    },
+  },
+};
 
-          {/* Document Link Input (Editable) */}
-          <FormGroup>
-            <label htmlFor="doc_link">Document Link</label>
-            <input
-              type="url"
-              id="doc_link"
-              name="doc_link"
-              value={formData.doc_link}
-              onChange={(e) => handleInputChange(e)}
-              placeholder="Enter Document Link"
-            />
-          </FormGroup>
+const workbenchReducer = (state = initialState, action) => {
+  switch (action.type) {
+    case WORKBENCH_TYPES.FETCH_REQUEST:
+      return {
+        ...state,
+        [action.payload.card]: {
+          ...state[action.payload.card],
+          loading: true,
+          error: null,
+        },
+      };
 
-          {/* SharePoint Link Input (Editable) */}
-          <FormGroup>
-            <label htmlFor="sharepoint_link">SharePoint Link</label>
-            <input
-              type="url"
-              id="sharepoint_link"
-              name="sharepoint_link"
-              value={formData.sharepoint_link}
-              onChange={(e) => handleInputChange(e)}
-              placeholder="Enter SharePoint Link"
-            />
-          </FormGroup>
+    case WORKBENCH_TYPES.FETCH_SUCCESS:
+      if (action.payload.card === "card4") {
+        return {
+          ...state,
+          card4: {
+            ...state.card4,
+            loading: false,
+            data: action.payload.data,
+            dropdowns: {
+              ...state.card4.dropdowns,
+              ...action.payload.data, // Update dropdown options dynamically
+            },
+          },
+        };
+      }
+      return {
+        ...state,
+        [action.payload.card]: {
+          ...state[action.payload.card],
+          loading: false,
+          data: action.payload.data,
+        },
+      };
 
-          {/* Editable File Path Input (Editable) */}
-          <FormGroup>
-            <label htmlFor="editable_file_path">Editable File Path</label>
-            <input
-              type="text"
-              id="editable_file_path"
-              name="editable_file_path"
-              value={formData.editable_file_path}
-              onChange={(e) => handleInputChange(e)}
-              placeholder="Enter Editable File Path"
-            />
-          </FormGroup>
-        </form>
-      </FormSectionContainer>
-    </Container>
-  ); 
-}
+    case WORKBENCH_TYPES.FETCH_FAILURE:
+      return {
+        ...state,
+        [action.payload.card]: {
+          ...state[action.payload.card],
+          loading: false,
+          error: action.payload.error,
+        },
+      };
 
-export default FormSection;
+    case WORKBENCH_TYPES.UPDATE_DROPDOWN_SELECTION:
+      return {
+        ...state,
+        card4: {
+          ...state.card4,
+          dropdowns: {
+            ...state.card4.dropdowns,
+            [action.payload.name]: {
+              ...state.card4.dropdowns[action.payload.name],
+              selected: action.payload.value,
+            },
+          },
+        },
+      };
+
+    default:
+      return state;
+  }
+};
+
+export default workbenchReducer;
+
+
