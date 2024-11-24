@@ -1,102 +1,153 @@
-import React, { useState } from 'react';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
-import { Card } from 'react-bootstrap'; // Import Card from react-bootstrap
+import React, { useState, useEffect } from 'react';
+import { Form, Container } from 'react-bootstrap';
+import { FormSectionContainer, FormGroup } from './styles';
 
-// Sample data with long text
-const data = [
-  { id: 1, name: "A very long name that needs to be truncated", description: "This is a description with some long text that needs to be truncated." },
-  { id: 2, name: "Short Name", description: "Another description" },
-  { id: 3, name: "Another very long name example", description: "This is a description with a lot of details and information that will be truncated." }
-];
+function FormSection({ type }) {
+  const [formData, setFormData] = useState({
+    title_name: '',
+    category_name: '',
+    description: '',
+    doc_link: '',
+    sharepoint_link: '',
+    editable_file_path: '',
+  });
 
-const TableComponent = () => {
-  const [tooltip, setTooltip] = useState(null); // To manage tooltip visibility and content
-  const columns = [
-    { field: "name", header: "Name" },
-    { field: "description", header: "Description" }
-  ];
+  const [categories, setCategories] = useState([
+    'Research and Development',
+    'Marketing',
+    'Human Resources',
+    'Finance',
+    'Engineering',
+  ]); // Example dropdown options
 
-  // Function to handle tooltip visibility on hover
-  const handleMouseEnter = (e, value) => {
-    const tooltip = document.createElement('div');
-    tooltip.id = 'custom-tooltip';
-    tooltip.style.position = 'absolute';
-    tooltip.style.backgroundColor = 'rgba(0, 0, 0, 0.8)'; // Dark background
-    tooltip.style.color = 'white'; // White text
-    tooltip.style.padding = '5px 10px';
-    tooltip.style.borderRadius = '5px';
-    tooltip.style.whiteSpace = 'normal'; // Allow text to wrap
-    tooltip.style.maxWidth = '300px'; // Maximum width of the tooltip
-    tooltip.style.zIndex = '9999';
-    tooltip.innerText = value;
+  const [filteredCategories, setFilteredCategories] = useState(categories); // To handle search
 
-    document.body.appendChild(tooltip);
+  useEffect(() => {
+    const fetchedData = {
+      title_name: 'Project X',
+      category_name: 'Research and Development',
+      description:
+        'This is a description of Project X. The description is detailed and can be long enough to demonstrate text wrapping behavior in the form section.',
+      doc_link: '',
+      sharepoint_link: '',
+      editable_file_path: '',
+    };
+    setFormData(fetchedData);
+  }, []);
 
-    // Position the tooltip above the element
-    const rect = e.target.getBoundingClientRect();
-    tooltip.style.top = `${rect.top - tooltip.offsetHeight}px`;
-    tooltip.style.left = `${rect.left + (rect.width - tooltip.offsetWidth) / 2}px`;
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
 
-  // Function to remove tooltip on mouse leave
-  const handleMouseLeave = () => {
-    const tooltip = document.getElementById('custom-tooltip');
-    if (tooltip) tooltip.remove(); // Remove tooltip on mouse leave
+  const handleCategorySearch = (e) => {
+    const searchValue = e.target.value.toLowerCase();
+    const filtered = categories.filter((category) =>
+      category.toLowerCase().includes(searchValue)
+    );
+    setFilteredCategories(filtered);
+  };
+
+  const handleCategorySelect = (e) => {
+    setFormData({
+      ...formData,
+      category_name: e.target.value,
+    });
   };
 
   return (
-    <div>
-      {/* Card with a title and custom background color */}
-      <Card style={{ height: '250px', width: '800px', borderRadius: '10px', marginTop: '20px' }}>
-        <Card.Header style={{ backgroundColor: '#007bff', color: 'white', padding: '15px', fontSize: '1.25rem' }}>
-          <h4>DataTable with Custom Tooltip on Hover</h4>
-        </Card.Header>
-        <Card.Body>
-          {/* DataTable with custom styling */}
-          <div style={{ marginTop: '20px', overflow: 'auto', height: 'calc(100% - 60px)' }}>
-            <DataTable value={data} responsive>
-              {columns.map((col, index) => (
-                <Column
-                  key={index}
-                  field={col.field}
-                  header={col.header}
-                  body={(rowData) => (
-                    <div
-                      style={{
-                        maxWidth: '200px',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        textAlign: 'center',  // Center align text
-                        cursor: 'pointer',    // Show pointer on hover
-                      }}
-                      onMouseEnter={(e) => handleMouseEnter(e, rowData[col.field])}  // Show tooltip
-                      onMouseLeave={handleMouseLeave}  // Hide tooltip
-                    >
-                      {rowData[col.field]}
-                    </div>
-                  )}
-                  headerStyle={{
-                    backgroundColor: '#f4f4f4',
-                    textAlign: 'center',
-                    fontWeight: 'bold',
-                    padding: '10px'
-                  }}
-                  bodyStyle={{
-                    textAlign: 'center',
-                    padding: '10px',
-                    fontSize: '14px',
-                    borderBottom: '1px solid #ddd'
-                  }}
-                />
-              ))}
-            </DataTable>
-          </div>
-        </Card.Body>
-      </Card>
-    </div>
-  );
-};
+    <Container className="p-4">
+      <FormSectionContainer>
+        <h3>
+          {type === 'component1'
+            ? 'Form for Component 1'
+            : type === 'component2'
+            ? 'Form for Component 2'
+            : 'Form for Component 3'}
+        </h3>
+        <form>
+          {/* Title Name (Text coming from API) */}
+          <FormGroup>
+            <label>Title Name:</label>
+            <div className="field-value">{formData.title_name}</div>
+          </FormGroup>
 
-export default TableComponent;
+          {/* Category Name (Searchable Dropdown) */}
+          <FormGroup>
+            <label>Category Name:</label>
+            <Form.Control
+              type="text"
+              placeholder="Search categories..."
+              onChange={handleCategorySearch}
+              className="mb-2"
+            />
+            <Form.Control
+              as="select"
+              value={formData.category_name}
+              onChange={handleCategorySelect}
+            >
+              <option value="" disabled>
+                Select a category
+              </option>
+              {filteredCategories.map((category, index) => (
+                <option key={index} value={category}>
+                  {category}
+                </option>
+              ))}
+            </Form.Control>
+          </FormGroup>
+
+          {/* Description (Text coming from API) */}
+          <FormGroup>
+            <label>Description:</label>
+            <div className="field-value">{formData.description}</div>
+          </FormGroup>
+
+          {/* Document Link Input (Editable) */}
+          <FormGroup>
+            <label htmlFor="doc_link">Document Link</label>
+            <input
+              type="url"
+              id="doc_link"
+              name="doc_link"
+              value={formData.doc_link}
+              onChange={(e) => handleInputChange(e)}
+              placeholder="Enter Document Link"
+            />
+          </FormGroup>
+
+          {/* SharePoint Link Input (Editable) */}
+          <FormGroup>
+            <label htmlFor="sharepoint_link">SharePoint Link</label>
+            <input
+              type="url"
+              id="sharepoint_link"
+              name="sharepoint_link"
+              value={formData.sharepoint_link}
+              onChange={(e) => handleInputChange(e)}
+              placeholder="Enter SharePoint Link"
+            />
+          </FormGroup>
+
+          {/* Editable File Path Input (Editable) */}
+          <FormGroup>
+            <label htmlFor="editable_file_path">Editable File Path</label>
+            <input
+              type="text"
+              id="editable_file_path"
+              name="editable_file_path"
+              value={formData.editable_file_path}
+              onChange={(e) => handleInputChange(e)}
+              placeholder="Enter Editable File Path"
+            />
+          </FormGroup>
+        </form>
+      </FormSectionContainer>
+    </Container>
+  ); 
+}
+
+export default FormSection;
