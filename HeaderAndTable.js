@@ -1,6 +1,42 @@
 import React, { useRef, useEffect } from 'react';
+import styled from 'styled-components';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+
+// Styled Components
+const Container = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px; /* Space between cards */
+`;
+
+const Card = styled.div`
+    height: 300px;
+    width: 75%;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    overflow: hidden; /* Prevent content overflow */
+    display: flex;
+    flex-direction: column;
+`;
+
+const ScrollableWrapper = styled.div`
+    flex: 1;
+    overflow-x: ${({ hideScrollbar }) => (hideScrollbar ? 'hidden' : 'auto')};
+    overflow-y: hidden;
+    white-space: nowrap;
+    /* Hide scrollbars when needed */
+    ::-webkit-scrollbar {
+        display: ${({ hideScrollbar }) => (hideScrollbar ? 'none' : 'initial')};
+    }
+    -ms-overflow-style: ${({ hideScrollbar }) => (hideScrollbar ? 'none' : 'auto')};
+    scrollbar-width: ${({ hideScrollbar }) => (hideScrollbar ? 'none' : 'auto')};
+`;
+
+const StyledDataTable = styled(DataTable)`
+    min-width: 1500px; /* Ensure horizontal scrolling for wide tables */
+`;
 
 const SynchronizedTablesSingleScrollbar = () => {
     const table1Ref = useRef(null);
@@ -42,35 +78,28 @@ const SynchronizedTablesSingleScrollbar = () => {
     }, []);
 
     const renderTable = (ref, data, showPagination, hideScrollbar = false) => (
-        <div
-            ref={ref}
-            style={{
-                overflowX: hideScrollbar ? 'hidden' : 'auto',
-                whiteSpace: 'nowrap',
-            }}
-        >
-            <DataTable
+        <ScrollableWrapper ref={ref} hideScrollbar={hideScrollbar}>
+            <StyledDataTable
                 value={data}
                 scrollable
-                scrollHeight="200px"
+                scrollHeight="100%" // Adjust height to fit within the card
                 paginator={showPagination}
                 rows={5}
                 scrollDirection="horizontal"
-                style={{ minWidth: '1500px' }} // Ensure the table is wide enough for horizontal scrolling
             >
                 {columns.map((col) => (
                     <Column key={col.field} field={col.field} header={col.header} />
                 ))}
-            </DataTable>
-        </div>
+            </StyledDataTable>
+        </ScrollableWrapper>
     );
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {renderTable(table1Ref, data, true, true)} {/* First table (hidden scrollbar) */}
-            {renderTable(table2Ref, data, false, true)} {/* Second table (hidden scrollbar) */}
-            {renderTable(table3Ref, data, false)} {/* Third table (scrollbar visible) */}
-        </div>
+        <Container>
+            <Card>{renderTable(table1Ref, data, true, true)}</Card> {/* First table (hidden scrollbar) */}
+            <Card>{renderTable(table2Ref, data, false, true)}</Card> {/* Second table (hidden scrollbar) */}
+            <Card>{renderTable(table3Ref, data, false)}</Card> {/* Third table (scrollbar visible) */}
+        </Container>
     );
 };
 
