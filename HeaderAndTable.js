@@ -1,162 +1,170 @@
-export const WORKBENCH_TYPES = {
-    FETCH_REQUEST: "FETCH_REQUEST",
-    FETCH_SUCCESS: "FETCH_SUCCESS",
-    FETCH_FAILURE: "FETCH_FAILURE",
-    UPDATE_DROPDOWN_SELECTION: "UPDATE_DROPDOWN_SELECTION",
+import React, { useState, useEffect } from "react";
+import { FormSectionContainer, FormGroup } from "./styles";
+
+function FormSection({ type }) {
+  const [formData, setFormData] = useState({
+    title_name: "",
+    category_name: "",
+    description: "",
+    doc_link: "",
+    sharepoint_link: "",
+    editable_file_path: "",
+  });
+
+  const [isEditable, setIsEditable] = useState(false);
+
+  useEffect(() => {
+    // Simulated API fetch
+    const fetchedData = {
+      title_name: "Project X",
+      category_name: "Research and Development",
+      description:
+        "This is a description of Project X. The description is detailed and can be long enough to demonstrate text wrapping behavior in the form section.",
+      doc_link: "",
+      sharepoint_link: "",
+      editable_file_path: "",
+    };
+
+    setFormData(fetchedData);
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
   };
 
-  
-//   ##Actions
+  const toggleEdit = () => {
+    setIsEditable((prev) => !prev);
+  };
 
-import { WORKBENCH_TYPES } from "./workbench.types";
+  return (
+    <FormSectionContainer>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <h3>
+          {type === "component1"
+            ? "Form for Component 1"
+            : type === "component2"
+            ? "Form for Component 2"
+            : "Form for Component 3"}
+        </h3>
+        <button
+          onClick={toggleEdit}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            fontSize: "1.2rem",
+          }}
+          title={isEditable ? "Disable Editing" : "Enable Editing"}
+        >
+          🖉
+        </button>
+      </div>
+      <form>
+        {/* Title Name */}
+        <FormGroup>
+          <label>Title Name:</label>
+          {isEditable ? (
+            <input
+              type="text"
+              name="title_name"
+              value={formData.title_name}
+              onChange={handleInputChange}
+              placeholder={formData.title_name}
+            />
+          ) : (
+            <div className="field-value">{formData.title_name}</div>
+          )}
+        </FormGroup>
 
-// Fetch request action
-export const fetchRequest = (card) => ({
-  type: WORKBENCH_TYPES.FETCH_REQUEST,
-  payload: { card },
-});
+        {/* Category Name */}
+        <FormGroup>
+          <label>Category Name:</label>
+          {isEditable ? (
+            <input
+              type="text"
+              name="category_name"
+              value={formData.category_name}
+              onChange={handleInputChange}
+              placeholder={formData.category_name}
+            />
+          ) : (
+            <div className="field-value">{formData.category_name}</div>
+          )}
+        </FormGroup>
 
-// Fetch success action
-export const fetchSuccess = (card, data) => ({
-  type: WORKBENCH_TYPES.FETCH_SUCCESS,
-  payload: { card, data },
-});
+        {/* Description */}
+        <FormGroup>
+          <label>Description:</label>
+          {isEditable ? (
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              placeholder={formData.description}
+              rows="4"
+            />
+          ) : (
+            <div className="field-value">{formData.description}</div>
+          )}
+        </FormGroup>
 
-// Fetch failure action
-export const fetchFailure = (card, error) => ({
-  type: WORKBENCH_TYPES.FETCH_FAILURE,
-  payload: { card, error },
-});
+        {/* Document Link */}
+        <FormGroup>
+          <label htmlFor="doc_link">Document Link:</label>
+          {isEditable ? (
+            <input
+              type="url"
+              id="doc_link"
+              name="doc_link"
+              value={formData.doc_link}
+              onChange={handleInputChange}
+              placeholder={formData.doc_link || "Enter Document Link"}
+            />
+          ) : (
+            <div className="field-value">{formData.doc_link || "N/A"}</div>
+          )}
+        </FormGroup>
 
-// Update dropdown selection
-export const updateDropdownSelection = (name, value) => ({
-  type: WORKBENCH_TYPES.UPDATE_DROPDOWN_SELECTION,
-  payload: { name, value },
-});
+        {/* SharePoint Link */}
+        <FormGroup>
+          <label htmlFor="sharepoint_link">SharePoint Link:</label>
+          {isEditable ? (
+            <input
+              type="url"
+              id="sharepoint_link"
+              name="sharepoint_link"
+              value={formData.sharepoint_link}
+              onChange={handleInputChange}
+              placeholder={formData.sharepoint_link || "Enter SharePoint Link"}
+            />
+          ) : (
+            <div className="field-value">{formData.sharepoint_link || "N/A"}</div>
+          )}
+        </FormGroup>
 
-// Fetch data for a card
-export const fetchCardData = (card, endpoint, params = {}) => async (dispatch) => {
-  dispatch(fetchRequest(card));
-  try {
-    const queryParams = new URLSearchParams(params).toString();
-    const url = queryParams ? `${endpoint}?${queryParams}` : endpoint;
-    const response = await fetch(url);
+        {/* Editable File Path */}
+        <FormGroup>
+          <label htmlFor="editable_file_path">Editable File Path:</label>
+          {isEditable ? (
+            <input
+              type="text"
+              id="editable_file_path"
+              name="editable_file_path"
+              value={formData.editable_file_path}
+              onChange={handleInputChange}
+              placeholder={formData.editable_file_path || "Enter Editable File Path"}
+            />
+          ) : (
+            <div className="field-value">{formData.editable_file_path || "N/A"}</div>
+          )}
+        </FormGroup>
+      </form>
+    </FormSectionContainer>
+  );
+}
 
-    if (!response.ok) throw new Error(`Failed to fetch ${card} data`);
-
-    const data = await response.json();
-    dispatch(fetchSuccess(card, data));
-  } catch (error) {
-    dispatch(fetchFailure(card, error.message));
-  }
-};
-
-// Fetch dropdown data based on dependencies
-export const fetchDropdownData = (name, params) => async (dispatch) => {
-  dispatch(fetchRequest("card4"));
-  try {
-    const response = await fetch(`/api/card4/${name}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(params),
-    });
-    if (!response.ok) throw new Error("Failed to fetch dropdown data");
-
-    const data = await response.json();
-    dispatch(fetchSuccess("card4", { [name]: { options: data } }));
-  } catch (error) {
-    dispatch(fetchFailure("card4", error.message));
-  }
-};
-
-
-// reducer
-
-import { WORKBENCH_TYPES } from "./workbench.types";
-
-const initialState = {
-  card1: { data: null, loading: false, error: null },
-  card2: { data: null, loading: false, error: null },
-  card3: { data: null, loading: false, error: null },
-  card4: {
-    data: null,
-    loading: false,
-    error: null,
-    dropdowns: {
-      datasets: { options: [], selected: null },
-      containers: { options: [], selected: null },
-      fileTypes: { options: [], selected: null },
-      filePaths: { options: [], selected: null },
-    },
-  },
-};
-
-const workbenchReducer = (state = initialState, action) => {
-  switch (action.type) {
-    case WORKBENCH_TYPES.FETCH_REQUEST:
-      return {
-        ...state,
-        [action.payload.card]: {
-          ...state[action.payload.card],
-          loading: true,
-          error: null,
-        },
-      };
-
-    case WORKBENCH_TYPES.FETCH_SUCCESS:
-      if (action.payload.card === "card4") {
-        return {
-          ...state,
-          card4: {
-            ...state.card4,
-            loading: false,
-            data: action.payload.data,
-            dropdowns: {
-              ...state.card4.dropdowns,
-              ...action.payload.data, // Update dropdown options dynamically
-            },
-          },
-        };
-      }
-      return {
-        ...state,
-        [action.payload.card]: {
-          ...state[action.payload.card],
-          loading: false,
-          data: action.payload.data,
-        },
-      };
-
-    case WORKBENCH_TYPES.FETCH_FAILURE:
-      return {
-        ...state,
-        [action.payload.card]: {
-          ...state[action.payload.card],
-          loading: false,
-          error: action.payload.error,
-        },
-      };
-
-    case WORKBENCH_TYPES.UPDATE_DROPDOWN_SELECTION:
-      return {
-        ...state,
-        card4: {
-          ...state.card4,
-          dropdowns: {
-            ...state.card4.dropdowns,
-            [action.payload.name]: {
-              ...state.card4.dropdowns[action.payload.name],
-              selected: action.payload.value,
-            },
-          },
-        },
-      };
-
-    default:
-      return state;
-  }
-};
-
-export default workbenchReducer;
-
-
+export default FormSection;
