@@ -1,29 +1,83 @@
-import React, { useState, useEffect } from 'react';
-import { FormSectionContainer, FormGroup, Button } from './styles';
+import React, { useState, useEffect } from "react";
+import styled from "styled-components";
+
+const FormContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Adds spacing between form groups */
+  width: 100%; /* Ensures the form takes up full width */
+  height: 100%;
+`;
+
+const FormHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+`;
+
+const FormTitle = styled.h3`
+  font-size: 1.5rem;
+  margin: 0;
+`;
+
+const EditButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+`;
+
+const FormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+
+  label {
+    font-size: 1rem;
+    font-weight: bold;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    padding: 8px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  textarea {
+    resize: vertical; /* Allows vertical resizing but restricts horizontal resizing */
+  }
+`;
 
 function FormSection({ type }) {
-  // State to hold the form data coming from API
   const [formData, setFormData] = useState({
-    title_name: '',
-    category_name: '',
-    description: '',
-    doc_link: '',
-    sharepoint_link: '',
-    editable_file_path: ''
+    title_name: "",
+    category_name: "",
+    description: "",
+    doc_link: "",
+    sharepoint_link: "",
+    editable_file_path: "",
   });
 
-  // Mocking API call and setting data (you can replace this with actual API call)
+  const [isEditable, setIsEditable] = useState(false);
+
   useEffect(() => {
-    // Simulating API response
     const fetchedData = {
-      title_name: 'Project X',
-      category_name: 'Research and Development',
-      description: 'This is a description of Project X. The description is detailed and can be long enough to demonstrate text wrapping behavior in the form section.',
-      doc_link: '',
-      sharepoint_link: '',
-      editable_file_path: ''
+      title_name: "Project X",
+      category_name: "Research and Development",
+      description:
+        "This is a description of Project X. The description is detailed and can be long enough to demonstrate text wrapping behavior in the form section.",
+      doc_link: "",
+      sharepoint_link: "",
+      editable_file_path: "",
     };
-    
+
     setFormData(fetchedData);
   }, []);
 
@@ -31,72 +85,126 @@ function FormSection({ type }) {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
 
+  const toggleEdit = () => {
+    setIsEditable((prev) => !prev);
+  };
+
   return (
-    <FormSectionContainer>
-      <h3>{type === 'component1' ? 'Form for Component 1' : type === 'component2' ? 'Form for Component 2' : 'Form for Component 3'}</h3>
+    <FormContainer>
+      <FormHeader>
+        <FormTitle>
+          {type === "component1"
+            ? "Form for Component 1"
+            : type === "component2"
+            ? "Form for Component 2"
+            : "Form for Component 3"}
+        </FormTitle>
+        <EditButton
+          onClick={toggleEdit}
+          title={isEditable ? "Disable Editing" : "Enable Editing"}
+        >
+          🖉
+        </EditButton>
+      </FormHeader>
       <form>
-        {/* Title Name (Text coming from API) */}
         <FormGroup>
           <label>Title Name:</label>
-          <div className="field-value">{formData.title_name}</div>
+          {isEditable ? (
+            <input
+              type="text"
+              name="title_name"
+              value={formData.title_name}
+              onChange={handleInputChange}
+              placeholder="Enter Title Name"
+            />
+          ) : (
+            <div>{formData.title_name}</div>
+          )}
         </FormGroup>
 
-        {/* Category Name (Text coming from API) */}
         <FormGroup>
           <label>Category Name:</label>
-          <div className="field-value">{formData.category_name}</div>
+          {isEditable ? (
+            <select
+              name="category_name"
+              value={formData.category_name}
+              onChange={handleInputChange}
+            >
+              <option value="">Select Category</option>
+              <option value="Research and Development">Research and Development</option>
+              <option value="Operations">Operations</option>
+              <option value="Sales">Sales</option>
+            </select>
+          ) : (
+            <div>{formData.category_name}</div>
+          )}
         </FormGroup>
 
-        {/* Description (Text coming from API) */}
         <FormGroup>
           <label>Description:</label>
-          <div className="field-value">{formData.description}</div>
+          {isEditable ? (
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              rows="4"
+              placeholder="Enter Description"
+            />
+          ) : (
+            <div>{formData.description}</div>
+          )}
         </FormGroup>
 
-        {/* Document Link Input (Editable) */}
         <FormGroup>
-          <label htmlFor="doc_link">Document Link</label>
-          <input
-            type="url"
-            id="doc_link"
-            name="doc_link"
-            value={formData.doc_link}
-            onChange={(e) => handleInputChange(e)}
-            placeholder="Enter Document Link"
-          />
+          <label>Document Link:</label>
+          {isEditable ? (
+            <input
+              type="url"
+              name="doc_link"
+              value={formData.doc_link}
+              onChange={handleInputChange}
+              placeholder="Enter Document Link"
+            />
+          ) : (
+            <div>{formData.doc_link || "N/A"}</div>
+          )}
         </FormGroup>
 
-        {/* SharePoint Link Input (Editable) */}
         <FormGroup>
-          <label htmlFor="sharepoint_link">SharePoint Link</label>
-          <input
-            type="url"
-            id="sharepoint_link"
-            name="sharepoint_link"
-            value={formData.sharepoint_link}
-            onChange={(e) => handleInputChange(e)}
-            placeholder="Enter SharePoint Link"
-          />
+          <label>SharePoint Link:</label>
+          {isEditable ? (
+            <input
+              type="url"
+              name="sharepoint_link"
+              value={formData.sharepoint_link}
+              onChange={handleInputChange}
+              placeholder="Enter SharePoint Link"
+            />
+          ) : (
+            <div>{formData.sharepoint_link || "N/A"}</div>
+          )}
         </FormGroup>
 
-        {/* Editable File Path Input (Editable) */}
         <FormGroup>
-          <label htmlFor="editable_file_path">Editable File Path</label>
-          <input
-            type="text"
-            id="editable_file_path"
-            name="editable_file_path"
-            value={formData.editable_file_path}
-            onChange={(e) => handleInputChange(e)}
-            placeholder="Enter Editable File Path"
-          />
+          <label>Editable File Path:</label>
+          {isEditable ? (
+            <input
+              type="text"
+              name="editable_file_path"
+              value={formData.editable_file_path}
+              onChange={handleInputChange}
+              placeholder="Enter Editable File Path"
+            />
+          ) : (
+            <div>{formData.editable_file_path || "N/A"}</div>
+          )}
         </FormGroup>
       </form>
-    </FormSectionContainer>
+    </FormContainer>
   );
 }
 
