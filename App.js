@@ -1,84 +1,76 @@
-import React, { useState } from 'react';
-import * as XLSX from 'xlsx';
-import { Container, ContentWrapper, Component, TitleBox, TableContainer, FormContainer, Button } from './styles';
+import React, { useState } from "react";
+import styled from "styled-components";
+import SynchronizedTablesDynamicWidth from "./components/DataTables";
+import FormSection from './components/FormSection';
 
 // Dummy data for the table (can be replaced by API data)
 const dummyData = [
   { id: 1, name: "John Doe", age: 30, location: "New York", email: "john@example.com", phone: "555-1234", address: "123 Main St", city: "New York", state: "NY", country: "USA" },
   { id: 2, name: "Jane Smith", age: 25, location: "London", email: "jane@example.com", phone: "555-5678", address: "456 Elm St", city: "London", state: "LDN", country: "UK" },
   { id: 3, name: "Mark Johnson", age: 40, location: "Los Angeles", email: "mark@example.com", phone: "555-9012", address: "789 Oak St", city: "Los Angeles", state: "CA", country: "USA" },
+ 
   // Add more rows as needed
 ];
+
+// Styled Components
+const AppContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  height: 80vh;
+  padding: 10px;
+  box-sizing: border-box;
+  gap: 10px;
+`;
+
+const TitleContainer = styled.div`
+  flex: 1;
+  // max-width: 30%;
+  width: 100px;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+`;
+
+const TablesContainer = styled.div`
+  flex: 3;
+  min-width: 80%;
+`;
+
+const FormContainer = styled.div`
+  flex: 1;
+  max-width: 20%;
+  min-width: 250px;
+  background-color: #f9f9f9;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+`;
 
 function App() {
   const [data, setData] = useState(dummyData);
 
-  // Function to export table data to Excel
-  const handleExport = () => {
-    const ws = XLSX.utils.json_to_sheet(data); // Convert data to sheet format
-    const wb = XLSX.utils.book_new(); // Create a new workbook
-    XLSX.utils.book_append_sheet(wb, ws, "Sheet1"); // Append the sheet to the workbook
-
-    // Export the workbook to Excel file
-    XLSX.writeFile(wb, "table_data.xlsx");
-  };
-
   return (
-    <Container>
-      <ContentWrapper>
-        <Component>
-          <TitleBox>
-            <h2>Table Title</h2>
-          </TitleBox>
-          <TableContainer>
-            {/* Export Button aligned to the right */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
-              <Button onClick={handleExport}>Export to Excel</Button>
-            </div>
+    <AppContainer>
+      {/* Title Component */}
+      {/* <TitleContainer>
+        <h2>Title Component</h2>
+        <p>This is the title or description section.</p>
+      </TitleContainer> */}
 
-            {/* Table */}
-            <table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Name</th>
-                  <th>Age</th>
-                  <th>Location</th>
-                  <th>Email</th>
-                  <th>Phone</th>
-                  <th>Address</th>
-                  <th>City</th>
-                  <th>State</th>
-                  <th>Country</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((row) => (
-                  <tr key={row.id}>
-                    <td>{row.id}</td>
-                    <td>{row.name}</td>
-                    <td>{row.age}</td>
-                    <td>{row.location}</td>
-                    <td>{row.email}</td>
-                    <td>{row.phone}</td>
-                    <td>{row.address}</td>
-                    <td>{row.city}</td>
-                    <td>{row.state}</td>
-                    <td>{row.country}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </TableContainer>
-        </Component>
-      </ContentWrapper>
+      {/* SynchronizedTablesDynamicWidth */}
+      <TablesContainer>
+        <SynchronizedTablesDynamicWidth data={data} />
+      </TablesContainer>
 
-      {/* Form Section */}
+      {/* Form Component */}
       <FormContainer>
-        <h3>Form Section</h3>
-        {/* Add your form elements here */}
+      <FormSection/>
       </FormContainer>
-    </Container>
+    </AppContainer>
   );
 }
 
