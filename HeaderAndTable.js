@@ -228,73 +228,106 @@ const SynchronizedTablesDynamicWidth = ({ data, deltaData }) => {
   
   
 
-  const renderTable3 = (ref, data, columns) => (
-    <ScrollableWrapper ref={ref}>
-      <StyledDataTable
-        value={data}
-        scrollable
-        showGridlines
-        stripedRows
-        scrollHeight="calc(100% - 10px)"
-        scrollDirection="horizontal"
-        minWidth={minWidth}
-        size="small"
-        style={{ width: '200px' }}
-      >
-        {columns.map((col) => (
-          <Column
-            key={col.field}
-            field={col.field}
-            header={col.header}
-            body={(rowData, { rowIndex }) =>
-              [1, 3, 4].includes(rowIndex) ? (
+  const RenderTable3 = (ref, data, columns) => {
+    const [searchFilters, setSearchFilters] = useState({});
+  
+    // Update search filter value for a column
+    const handleSearchChange = (field, value) => {
+      setSearchFilters((prev) => ({
+        ...prev,
+        [field]: value.toLowerCase(),
+      }));
+    };
+  
+    // Filter rows based on search inputs
+    const filteredData = data.filter((row) =>
+      columns.every((col) =>
+        searchFilters[col.field]
+          ? String(row[col.field]).toLowerCase().includes(searchFilters[col.field])
+          : true
+      )
+    );
+  
+    return (
+      <ScrollableWrapper ref={ref}>
+        <StyledDataTable
+          value={filteredData} // Use filtered data here
+          scrollable
+          showGridlines
+          stripedRows
+          scrollHeight="calc(100% - 10px)"
+          scrollDirection="horizontal"
+          minWidth={minWidth}
+          size="small"
+          style={{ width: "200px" }}
+        >
+          {columns.map((col) => (
+            <Column
+              key={col.field}
+              field={col.field}
+              header={
                 <input
                   type="text"
-                  value={rowData[col.field]}
-                  onChange={(e) =>
-                    handleEdit(rowIndex, col.field, e.target.value)
-                  }
+                  placeholder={`Search ${col.header}`}
+                  onChange={(e) => handleSearchChange(col.field, e.target.value)}
                   style={{
-                    width: '100%',
-                    padding: '4px',
-                    boxSizing: 'border-box',
+                    width: "100%",
+                    padding: "4px",
+                    boxSizing: "border-box",
                   }}
                 />
-              ) : (
-                rowData[col.field]
-              )
-            }
-            footer={
-              <div style={{ textAlign: 'center' }}>
-                <Button
-                  label="Action 1"
-                  onClick={() => handleButtonClick(col.field, 'Action 1')}
-                  className="p-button-sm"
-                  style={{
-                    fontSize: '10px',
-                    padding: '4px 8px',
-                    height: '24px',
-                  }}
-                />
-                <Button
-                  label="Action 2"
-                  onClick={() => handleButtonClick(col.field, 'Action 2')}
-                  className="p-button-sm p-button-secondary"
-                  style={{
-                    fontSize: '10px',
-                    padding: '4px 8px',
-                    height: '24px',
-                    marginLeft: '5px',
-                  }}
-                />
-              </div>
-            }
-            headerStyle={{ width: '10rem' }}
-          />
-        ))}
-      </StyledDataTable>
-    </ScrollableWrapper>
-  );
+              }
+              body={(rowData, { rowIndex }) =>
+                [1, 3, 4].includes(rowIndex) ? (
+                  <input
+                    type="text"
+                    value={rowData[col.field]}
+                    onChange={(e) =>
+                      handleEdit(rowIndex, col.field, e.target.value)
+                    }
+                    style={{
+                      width: "100%",
+                      padding: "4px",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                ) : (
+                  rowData[col.field]
+                )
+              }
+              footer={
+                <div style={{ textAlign: "center" }}>
+                  <Button
+                    label="Action 1"
+                    onClick={() => handleButtonClick(col.field, "Action 1")}
+                    className="p-button-sm"
+                    style={{
+                      fontSize: "10px",
+                      padding: "4px 8px",
+                      height: "24px",
+                    }}
+                  />
+                  <Button
+                    label="Action 2"
+                    onClick={() => handleButtonClick(col.field, "Action 2")}
+                    className="p-button-sm p-button-secondary"
+                    style={{
+                      fontSize: "10px",
+                      padding: "4px 8px",
+                      height: "24px",
+                      marginLeft: "5px",
+                    }}
+                  />
+                </div>
+              }
+              headerStyle={{ width: "10rem" }}
+            />
+          ))}
+        </StyledDataTable>
+      </ScrollableWrapper>
+    );
+  };
+  
   
   
   
@@ -329,7 +362,7 @@ const SynchronizedTablesDynamicWidth = ({ data, deltaData }) => {
             {renderOneColumnTable(deltaTableRef, oneColumnData)} {/* Delta small table */}
           </div>
           <div style={{ width: '80%' }}>
-            {renderTable3(table3Ref, data, columns)} {/* Delta large table with pagination */}
+            {RenderTable3(table3Ref, data, columns)} {/* Delta large table with pagination */}
           </div>
         </TableWrapper>
       </Card>
