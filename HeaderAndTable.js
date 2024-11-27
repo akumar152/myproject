@@ -72,7 +72,6 @@ const SynchronizedTablesDynamicWidth = ({ data, deltaData }) => {
 
   // Columns for main table
   const columns = [
-    { field: "static", header: "Static Column" }, // Static column
     ...Object.keys(data[0] || {}).map((key) => ({
       field: key,
       header: key.charAt(0).toUpperCase() + key.slice(1),
@@ -209,6 +208,26 @@ const SynchronizedTablesDynamicWidth = ({ data, deltaData }) => {
     console.log(`Button ${buttonNumber} clicked for column: ${field}`);
   };
 
+  const handleEdit = (rowIndex, field, value) => {
+    const updatedData = [...data];
+    updatedData[rowIndex][field] = value;
+    // setData(updatedData); // Assuming you are managing the `data` state
+  };
+
+  const dropdownOptions = [
+    { value: 'Option1', label: 'Option 1' },
+    { value: 'Option2', label: 'Option 2' },
+    { value: 'Option3', label: 'Option 3' },
+  ];
+
+  const handleDropdownChange = (rowIndex, field, value) => {
+    const updatedData = [...data];
+    updatedData[rowIndex][field] = value;
+    // setData(updatedData); // Assuming you are managing the `data` state
+  };
+  
+  
+
   const renderTable3 = (ref, data, columns) => (
     <ScrollableWrapper ref={ref}>
       <StyledDataTable
@@ -220,38 +239,66 @@ const SynchronizedTablesDynamicWidth = ({ data, deltaData }) => {
         scrollDirection="horizontal"
         minWidth={minWidth}
         size="small"
-        style={{width:'200px'}}
+        style={{ width: '200px' }}
       >
         {columns.map((col) => (
           <Column
             key={col.field}
             field={col.field}
             header={col.header}
-            // body={col.field === "static" ? staticColumnBody : undefined}
-            // frozen={col.field === "static"}
+            body={(rowData, { rowIndex }) =>
+              [1, 3, 4].includes(rowIndex) ? (
+                <input
+                  type="text"
+                  value={rowData[col.field]}
+                  onChange={(e) =>
+                    handleEdit(rowIndex, col.field, e.target.value)
+                  }
+                  style={{
+                    width: '100%',
+                    padding: '4px',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              ) : (
+                rowData[col.field]
+              )
+            }
             footer={
-                <div style={{ textAlign: "center" }}>
-                  <Button
-                    label="Action 1"
-                    onClick={() => handleButtonClick(col.field, "Action 1")}
-                    className="p-button-sm"
-                    style={{ fontSize: "10px", padding: "4px 8px", height: "24px" }}
-                  />
-                  <Button
-                    label="Action 2"
-                    onClick={() => handleButtonClick(col.field, "Action 2")}
-                    className="p-button-sm p-button-secondary"
-                    style={{ fontSize: "10px", padding: "4px 8px", height: "24px", marginLeft: "5px" }}
-                  />
-                </div>
-              }
-              headerStyle={{ width: '10rem' }}
-              
+              <div style={{ textAlign: 'center' }}>
+                <Button
+                  label="Action 1"
+                  onClick={() => handleButtonClick(col.field, 'Action 1')}
+                  className="p-button-sm"
+                  style={{
+                    fontSize: '10px',
+                    padding: '4px 8px',
+                    height: '24px',
+                  }}
+                />
+                <Button
+                  label="Action 2"
+                  onClick={() => handleButtonClick(col.field, 'Action 2')}
+                  className="p-button-sm p-button-secondary"
+                  style={{
+                    fontSize: '10px',
+                    padding: '4px 8px',
+                    height: '24px',
+                    marginLeft: '5px',
+                  }}
+                />
+              </div>
+            }
+            headerStyle={{ width: '10rem' }}
           />
         ))}
       </StyledDataTable>
     </ScrollableWrapper>
   );
+  
+  
+  
+  
   return (
     <Container>
       <Card>
