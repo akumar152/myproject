@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import SynchronizedTablesDynamicWidth from "./components/DataTables";
 import FormSection from './components/FormSection';
+import DropdownWithSearch from "./components/DropdownWithSearch";
+import CollapsibleTable from "./components/TableTotest";
 
 // Dummy data for the table (can be replaced by API data)
 const dummyData = [
   { id: 1, name: "John Doe", age: 30, location: "New York", email: "john@example.com", phone: "555-1234", address: "123 Main St", city: "New York", state: "NY", country: "USA" },
   { id: 2, name: "Jane Smith", age: 25, location: "London", email: "jane@example.com", phone: "555-5678", address: "456 Elm St", city: "London", state: "LDN", country: "UK" },
   { id: 3, name: "Mark Johnson", age: 40, location: "Los Angeles", email: "mark@example.com", phone: "555-9012", address: "789 Oak St", city: "Los Angeles", state: "CA", country: "USA" },
- 
-  // Add more rows as needed
 ];
 
 // Styled Components
@@ -53,8 +53,12 @@ const FormContainer = styled.div`
 function App() {
   const [data, setData] = useState(dummyData);
 
+  
+
   return (
     <AppContainer>
+      <CollapsibleTable/>
+      
       {/* Title Component */}
       {/* <TitleContainer>
         <h2>Title Component</h2>
@@ -62,14 +66,13 @@ function App() {
       </TitleContainer> */}
 
       {/* SynchronizedTablesDynamicWidth */}
-      <TablesContainer>
+      {/* <TablesContainer>
         <SynchronizedTablesDynamicWidth data={data} />
       </TablesContainer>
 
-      {/* Form Component */}
       <FormContainer>
       <FormSection/>
-      </FormContainer>
+      </FormContainer> */}
     </AppContainer>
   );
 }
