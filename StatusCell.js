@@ -1,201 +1,70 @@
 
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from "react";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
+import { Button } from "primereact/button";
+import "primereact/resources/themes/lara-light-indigo/theme.css";
+import "primereact/resources/primereact.min.css";
 
-const RenderTable3 = (ref, data, columns) => {
-  const [searchFilters, setSearchFilters] = useState({});
-  const [buttonStates, setButtonStates] = useState({});
-  const [tableData, setTableData] = useState(data); // Local state for table data
+const TableWithColumnFooterButtons = () => {
+  const [columnStates, setColumnStates] = useState({
+    ID: { label: "Review Not Started", color: "gray" },
+    Name: { label: "Review Not Started", color: "gray" },
+    Status: { label: "Review Not Started", color: "gray" },
+  });
 
-  // Fetch initial statuses from the API
-  useEffect(() => {
-    const fetchStatuses = async () => {
-      try {
-        const response = await axios.get("/api/get-statuses"); // Replace with your API endpoint
-        const initialStates = {};
+  const data = [
+    { id: 1, name: "John Doe", status: "Pending" },
+    { id: 2, name: "Jane Smith", status: "Approved" },
+  ];
 
-        response.data.forEach((row) => {
-          const { id, status } = row; // Assuming each row has 'id' and 'status'
-          initialStates[id] = {
-            button1:
-              status === "Submit"
-                ? "Submitted"
-                : "Submit",
-            button2:
-              status === "Review not started"
-                ? "In Review"
-                : status === "In Review"
-                ? "Review Completed"
-                : "Review not started",
-          };
-        });
+  const handleButtonClick = (columnName) => {
+    setColumnStates((prevState) => {
+      const currentState = prevState[columnName];
+      let newLabel = "";
+      let newColor = "";
 
-        setButtonStates(initialStates);
-      } catch (error) {
-        console.error("Error fetching initial statuses:", error);
+      if (currentState.label === "Review Not Started") {
+        newLabel = "Submitted for Review";
+        newColor = "blue";
+      } else if (currentState.label === "Submitted for Review") {
+        newLabel = "Review Completed";
+        newColor = "green";
+      } else {
+        newLabel = "Review Not Started";
+        newColor = "gray";
       }
-    };
 
-    fetchStatuses();
-  }, []);
+      return {
+        ...prevState,
+        [columnName]: { label: newLabel, color: newColor },
+      };
+    });
 
-  // Update search filter value for a column
-  const handleSearchChange = (field, value) => {
-    setSearchFilters((prev) => ({
-      ...prev,
-      [field]: value.toLowerCase(),
-    }));
+    console.log(`Data for column "${columnName}":`, data.map((row) => row[columnName.toLowerCase()]));
   };
 
-  // Handle button click, update data, and send to API
-  const handleButtonClick = async (field, type, rowId) => {
-    let updatedStatus;
-
-    if (type === "Submit") {
-      updatedStatus = "Submitted";
-    } else if (type === "Review not started") {
-      updatedStatus = "In Review";
-    } else if (type === "In Review") {
-      updatedStatus = "Review Completed";
-    }
-
-    // Update button states
-    setButtonStates((prev) => ({
-      ...prev,
-      [rowId]: {
-        ...prev[rowId],
-        [type === "Submit" ? "button1" : "button2"]: updatedStatus,
-      },
-    }));
-
-    // Send updated data to the API
-    try {
-      await axios.post("/api/update-data", {
-        id: rowId,
-        field,
-        status: updatedStatus,
-      });
-      console.log("Data updated successfully!");
-    } catch (error) {
-      console.error("Error updating data:", error);
-    }
+  const footerTemplate = (columnName) => {
+    const columnState = columnStates[columnName];
+    return (
+      <Button
+        label={columnState.label}
+        style={{ backgroundColor: columnState.color, color: "white" }}
+        onClick={() => handleButtonClick(columnName)}
+      />
+    );
   };
-
-  // Determine button styles dynamically
-  const getButtonStyle = (label) => {
-    switch (label) {
-      case "Submit":
-        return { backgroundColor: "lightblue", color: "black" };
-      case "Submitted":
-        return { backgroundColor: "lightgreen", color: "black" };
-      case "Review not started":
-        return { backgroundColor: "orange", color: "black" };
-      case "In Review":
-        return { backgroundColor: "darkorange", color: "white" };
-      case "Review Completed":
-        return { backgroundColor: "darkgreen", color: "white" };
-      default:
-        return {};
-    }
-  };
-
-  // Filter rows based on search inputs
-  const filteredData = tableData.filter((row) =>
-    columns.every((col) =>
-      searchFilters[col.field]
-        ? String(row[col.field]).toLowerCase().includes(searchFilters[col.field])
-        : true
-    )
-  );
 
   return (
-    <ScrollableWrapper ref={ref}>
-      <StyledDataTable
-        value={filteredData} // Use filtered data here
-        scrollable
-        showGridlines
-        stripedRows
-        scrollHeight="calc(100% - 10px)"
-        scrollDirection="horizontal"
-        minWidth={minWidth}
-        size="small"
-        style={{ width: "200px" }}
-      >
-        {columns.map((col) => (
-          <Column
-            key={col.field}
-            field={col.field}
-            header={
-              <input
-                type="text"
-                placeholder={`Search ${col.header}`}
-                onChange={(e) => handleSearchChange(col.field, e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "4px",
-                  boxSizing: "border-box",
-                }}
-              />
-            }
-            body={(rowData, { rowIndex }) =>
-              [1, 3, 4].includes(rowIndex) ? (
-                <input
-                  type="text"
-                  value={rowData[col.field]}
-                  onChange={(e) =>
-                    handleEdit(rowIndex, col.field, e.target.value)
-                  }
-                  style={{
-                    width: "100%",
-                    padding: "4px",
-                    boxSizing: "border-box",
-                  }}
-                />
-              ) : (
-                rowData[col.field]
-              )
-            }
-            footer={(rowData, { rowIndex }) => {
-              const rowId = rowData.id; // Assuming each row has a unique ID
-              const button1Label = buttonStates[rowId]?.button1 || "Submit";
-              const button2Label = buttonStates[rowId]?.button2 || "Review not started";
-
-              return (
-                <div style={{ textAlign: "center" }}>
-                  <Button
-                    label={button1Label}
-                    onClick={() => handleButtonClick(col.field, "Submit", rowId)}
-                    className="p-button-sm"
-                    style={{
-                      ...getButtonStyle(button1Label),
-                      fontSize: "8px",
-                      padding: "4px 4px",
-                      height: "24px",
-                    }}
-                  />
-                  <Button
-                    label={button2Label}
-                    onClick={() =>
-                      handleButtonClick(col.field, button2Label, rowId)
-                    }
-                    className="p-button-sm p-button-secondary"
-                    style={{
-                      ...getButtonStyle(button2Label),
-                      fontSize: "8px",
-                      padding: "4px 4px",
-                      height: "24px",
-                      marginLeft: "5px",
-                    }}
-                  />
-                </div>
-              );
-            }}
-            headerStyle={{ width: "10rem" }}
-          />
-        ))}
-      </StyledDataTable>
-    </ScrollableWrapper>
+    <div>
+      <h3>Table with Column Footer Buttons</h3>
+      <DataTable value={data} responsiveLayout="scroll">
+        <Column field="id" header="ID" footer={footerTemplate("ID")} />
+        <Column field="name" header="Name" footer={footerTemplate("Name")} />
+        <Column field="status" header="Status" footer={footerTemplate("Status")} />
+      </DataTable>
+    </div>
   );
 };
 
-export default RenderTable3;
+export default TableWithColumnFooterButtons;
