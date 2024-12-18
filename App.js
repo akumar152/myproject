@@ -1,78 +1,94 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import SynchronizedTablesDynamicWidth from "./components/DataTables";
-import FormSection from './components/FormSection';
-import DropdownWithSearch from "./components/DropdownWithSearch";
-import CollapsibleTable from "./components/TableTotest";
+import Modal from "./components/Modal";
 
-// Dummy data for the table (can be replaced by API data)
+// Dummy data
 const dummyData = [
-  { id: 1, name: "John Doe", age: 30, location: "New York", email: "john@example.com", phone: "555-1234", address: "123 Main St", city: "New York", state: "NY", country: "USA" },
-  { id: 2, name: "Jane Smith", age: 25, location: "London", email: "jane@example.com", phone: "555-5678", address: "456 Elm St", city: "London", state: "LDN", country: "UK" },
-  { id: 3, name: "Mark Johnson", age: 40, location: "Los Angeles", email: "mark@example.com", phone: "555-9012", address: "789 Oak St", city: "Los Angeles", state: "CA", country: "USA" },
+  { id: 1, name: "John Doe", age: 30, location: "New York", email: "john@example.com", phone: "555-1234" },
+  { id: 2, name: "Jane Smith", age: 25, location: "London", email: "jane@example.com", phone: "555-5678" },
+  { id: 3, name: "Mark Johnson", age: 40, location: "Los Angeles", email: "mark@example.com", phone: "555-9012" },
 ];
 
 // Styled Components
 const AppContainer = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: flex-start;
-  justify-content: space-between;
   width: 100%;
-  height: 80vh;
-  padding: 10px;
+  padding: 20px;
   box-sizing: border-box;
   gap: 10px;
 `;
 
-const TitleContainer = styled.div`
-  flex: 1;
-  // max-width: 30%;
-  width: 100px;
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+const TopSection = styled.div`
+  display: flex;
+  justify-content: space-between; /* This positions buttons on opposite ends */
+  width: 100%;
+  margin-bottom: 10px;
+`;
+
+const LeftSection = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-left:90px;
+`;
+
+const RightSection = styled.div`
+  display: flex;
+  gap: 10px; /* Space between Filter and Form buttons */
 `;
 
 const TablesContainer = styled.div`
-  flex: 3;
-  min-width: 80%;
-`;
-
-const FormContainer = styled.div`
-  flex: 1;
-  max-width: 20%;
-  min-width: 250px;
+  width: 100%;
+  padding: 15px;
   background-color: #f9f9f9;
-  padding: 10px;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
-function App() {
-  const [data, setData] = useState(dummyData);
+const Button = styled.button`
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
 
-  
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
+function App() {
+  const [data] = useState(dummyData);
+  const [showModal, setShowModal] = useState(false);
+
+  // Function to toggle modal visibility
+  const toggleModal = () => setShowModal(!showModal);
 
   return (
     <AppContainer>
-      <CollapsibleTable/>
-      
-      {/* Title Component */}
-      {/* <TitleContainer>
-        <h2>Title Component</h2>
-        <p>This is the title or description section.</p>
-      </TitleContainer> */}
+      {/* Top Section: Back button left, Form and Filter buttons right */}
+      <TopSection>
+        <LeftSection>
+          <Button onClick={() => alert("Back button clicked!")}>Back</Button>
+        </LeftSection>
 
-      {/* SynchronizedTablesDynamicWidth */}
-      {/* <TablesContainer>
+        <RightSection>
+          <Button onClick={() => alert("Filter button clicked!")}>Filter</Button>
+          <Button onClick={toggleModal}>Open Form</Button>
+        </RightSection>
+      </TopSection>
+
+      {/* Table Container */}
+      <TablesContainer>
         <SynchronizedTablesDynamicWidth data={data} />
       </TablesContainer>
 
-      <FormContainer>
-      <FormSection/>
-      </FormContainer> */}
+      {/* Modal */}
+      {showModal && <Modal onClose={toggleModal} />}
     </AppContainer>
   );
 }
