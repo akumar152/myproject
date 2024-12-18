@@ -1,70 +1,185 @@
+import React from "react";
+import styled from "styled-components";
 
-import React, { useState } from "react";
-import { DataTable } from "primereact/datatable";
-import { Column } from "primereact/column";
-import { Button } from "primereact/button";
-import "primereact/resources/themes/lara-light-indigo/theme.css";
-import "primereact/resources/primereact.min.css";
+// Styled Components for Modal
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Transparent dark overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+`;
 
-const TableWithColumnFooterButtons = () => {
-  const [columnStates, setColumnStates] = useState({
-    ID: { label: "Review Not Started", color: "gray" },
-    Name: { label: "Review Not Started", color: "gray" },
-    Status: { label: "Review Not Started", color: "gray" },
-  });
+const ModalContainer = styled.div`
+  background-color: #fff;
+  width: 50%;
+  max-width: 600px;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  position: relative;
+  font-family: Arial, sans-serif;
 
-  const data = [
-    { id: 1, name: "John Doe", status: "Pending" },
-    { id: 2, name: "Jane Smith", status: "Approved" },
-  ];
+  @media (max-width: 768px) {
+    width: 90%;
+  }
+`;
 
-  const handleButtonClick = (columnName) => {
-    setColumnStates((prevState) => {
-      const currentState = prevState[columnName];
-      let newLabel = "";
-      let newColor = "";
+const ModalTitle = styled.h2`
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+`;
 
-      if (currentState.label === "Review Not Started") {
-        newLabel = "Submitted for Review";
-        newColor = "blue";
-      } else if (currentState.label === "Submitted for Review") {
-        newLabel = "Review Completed";
-        newColor = "green";
-      } else {
-        newLabel = "Review Not Started";
-        newColor = "gray";
-      }
+const ModalForm = styled.form`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two-column layout */
+  gap: 20px;
 
-      return {
-        ...prevState,
-        [columnName]: { label: newLabel, color: newColor },
-      };
-    });
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr; /* Single column on small screens */
+  }
+`;
 
-    console.log(`Data for column "${columnName}":`, data.map((row) => row[columnName.toLowerCase()]));
-  };
+const FormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
 
-  const footerTemplate = (columnName) => {
-    const columnState = columnStates[columnName];
+  label {
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    color: #555;
+    font-weight: bold;
+  }
+
+  input,
+  textarea {
+    padding: 8px 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+
+    &:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 3px rgba(0, 123, 255, 0.3);
+    }
+  }
+`;
+
+const ButtonContainer = styled.div`
+  grid-column: span 2; /* Buttons span both columns */
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+
+  @media (max-width: 600px) {
+    grid-column: span 1;
+    flex-direction: column;
+    gap: 10px;
+  }
+`;
+
+const ModalButton = styled.button`
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-left: 10px;
+  color: #fff;
+
+  &:first-child {
+    background-color: #6c757d; /* Cancel button style */
+  }
+
+  &:last-child {
+    background-color: #007bff; /* Submit button style */
+  }
+
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #333;
+  cursor: pointer;
+
+  &:hover {
+    color: #ff0000;
+  }
+`;
+
+function Modal({ onClose }) {
     return (
-      <Button
-        label={columnState.label}
-        style={{ backgroundColor: columnState.color, color: "white" }}
-        onClick={() => handleButtonClick(columnName)}
-      />
+        <ModalOverlay>
+            <ModalContainer>
+                {/* Close Button */}
+                <CloseButton onClick={onClose}>&times;</CloseButton>
+
+                {/* Title */}
+                <ModalTitle>Form Details</ModalTitle>
+
+                {/* Form */}
+                <ModalForm>
+                    {/* Non-Editable Fields */}
+                    <FormGroup>
+                        <label>Name</label>
+                        <input type="text" value="John Doe" readOnly />
+                    </FormGroup>
+
+                    <FormGroup>
+                        <label>Email</label>
+                        <input type="text" value="john.doe@example.com" readOnly />
+                    </FormGroup>
+
+                    <FormGroup>
+                        <label>Phone</label>
+                        <input type="text" value="555-1234" readOnly />
+                    </FormGroup>
+
+                    {/* Editable Fields */}
+                    <FormGroup>
+                        <label>Address</label>
+                        <input type="text" placeholder="Enter Address" />
+                    </FormGroup>
+
+                    <FormGroup>
+                        <label>City</label>
+                        <input type="text" placeholder="Enter City" />
+                    </FormGroup>
+
+                    <FormGroup>
+                        <label>State</label>
+                        <input type="text" placeholder="Enter State" />
+                    </FormGroup>
+
+                    {/* Buttons */}
+                    <ButtonContainer>
+                        <ModalButton type="button" onClick={onClose}>
+                            Cancel
+                        </ModalButton>
+                        <ModalButton type="submit">Submit</ModalButton>
+                    </ButtonContainer>
+                </ModalForm>
+            </ModalContainer>
+        </ModalOverlay>
     );
-  };
+}
 
-  return (
-    <div>
-      <h3>Table with Column Footer Buttons</h3>
-      <DataTable value={data} responsiveLayout="scroll">
-        <Column field="id" header="ID" footer={footerTemplate("ID")} />
-        <Column field="name" header="Name" footer={footerTemplate("Name")} />
-        <Column field="status" header="Status" footer={footerTemplate("Status")} />
-      </DataTable>
-    </div>
-  );
-};
-
-export default TableWithColumnFooterButtons;
+export default Modal;
