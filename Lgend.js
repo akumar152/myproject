@@ -5,6 +5,9 @@ import styled from "styled-components";
 import "primereact/resources/themes/saga-blue/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
+import { Button as StyledButton } from "primereact/button";
+import { MdExpandMore } from "react-icons/md";
+
 
 // Styled Components
 const PageContainer = styled.div`
@@ -50,13 +53,20 @@ const HeaderRight = styled.div`
   gap: 15px;
 `;
 
-const ChevronIcon = styled.span`
-  font-size: 18px;
+const ChevronIcon = styled(MdExpandMore)`
+  font-size: 24px;
   transition: transform 0.3s ease;
-  justify-content: flex-end;
-  align-self: flex-end;
-  transform: ${({ isCollapsed }) => (isCollapsed ? "rotate(90deg)" : "rotate(0deg)")};
+  transform: ${({ isCollapsed }) => (isCollapsed ? "rotate(-90deg)" : "rotate(0deg)")};
+  cursor: pointer;
 `;
+
+// const ChevronIcon = styled.span`
+//   font-size: 18px;
+//   transition: transform 0.3s ease;
+//   justify-content: flex-end;
+// //   align-self: flex-end;
+//   transform: ${({ isCollapsed }) => (isCollapsed ? "rotate(90deg)" : "rotate(0deg)")};
+// `;
 
 const Button = styled.button`
   background: none;
@@ -206,12 +216,31 @@ const TablesWithColumnPagination = () => {
         );
     };
 
-    const header = (
-        <div className="flex flex-wrap align-items-center justify-content-between gap-2">
-            <span className="text-xl text-900 font-bold">Products</span>
-            <Button icon="pi pi-refresh" rounded raised color="red"/>
+
+
+    const renderHeader = (index) => (
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }} onClick={() => toggleCollapse(index)}>
+            <span>Table {index + 1}</span>
+            <ChevronIcon
+                isCollapsed={collapsedTables[index]}
+                onClick={() => toggleCollapse(index)}
+            />
         </div>
     );
+
+    const header = (
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <HeaderLeft>
+                <h3>Table 3</h3>
+            </HeaderLeft>
+            <HeaderRight>
+                <Button>Submit</Button>
+                <Button>Review</Button>
+                <Button>Reset</Button>
+            </HeaderRight>
+        </div>
+        
+    )
 
     return (
         <PageContainer>
@@ -221,16 +250,46 @@ const TablesWithColumnPagination = () => {
                     style={{ position: index === 0 && collapsedTables[index] ? "sticky" : "relative", top: 0, zIndex: index === 0 ? 5 : 0 }}
                 >
                     <CardHeader onClick={() => toggleCollapse(index)}>
-                        <div style={{ height: "30px" }}></div>
+                        {/* <div style={{ height: "30px", width: '100%' }}>
+                            hello
+                            <ChevronIcon
+                                isCollapsed={collapsedTables[index]}
+                                onClick={() => toggleCollapse(index)}
+                            />
+                        </div> */}
+                        {/* <HeaderLeft>
+                            <h3>Table {index + 1}</h3>
+                        </HeaderLeft>
+                        <ChevronIcon
+                            isCollapsed={collapsedTables[index]}
+                            onClick={() => toggleCollapse(index)}
+                        /> */}
                         {collapsedTables[index] && (
-                            <DataTable value={[]} emptyMessage={<div style={{ height: "0px" }}></div>} showGridlines size="small" header={header}>
-                                {renderColumns()}
-                            </DataTable>
+                            <div onClick={() => toggleCollapse(index)}>
+                                <DataTable value={[]}
+                                    emptyMessage={<div
+                                        style={{ height: "0px" }}></div>}
+                                    showGridlines size="small"
+                                    header={renderHeader(index)}
+                                    // style={{ marginBottom: "20px", width: "100%" }}
+                                >
+                                    {renderColumns()}
+                                </DataTable>
+                            </div>
+                            
                         )}
                     </CardHeader>
 
                     {!collapsedTables[index] && (
-                        <DataTable value={tableData} size="small" showGridlines stripedRows rowHover={true} showHeaders={index === 0 ? true : false}>
+                        <DataTable
+                            value={tableData}
+                            size="small"
+                            showGridlines
+                            stripedRows
+                            rowHover={true}
+                            showHeaders={index === 0 ? true : false}
+                            header={renderHeader(index)}
+                        >
                             {renderColumns()}
                         </DataTable>
                     )}
@@ -238,7 +297,7 @@ const TablesWithColumnPagination = () => {
             ))}
             {/* Table 3 - No collapse */}
             <TableCard>
-                <CardHeader1>
+                {/* <CardHeader1>
                     <HeaderLeft>
                         <h3>Table 3</h3>
                     </HeaderLeft>
@@ -247,8 +306,8 @@ const TablesWithColumnPagination = () => {
                         <Button>Review</Button>
                         <Button>Reset</Button>
                     </HeaderRight>
-                </CardHeader1>
-                <DataTable value={dummyData3} size="small" showGridlines stripedRows>
+                </CardHeader1> */}
+                <DataTable value={dummyData3} size="small" showGridlines stripedRows header={header}>
                     {renderColumns()}
                 </DataTable>
             </TableCard>
